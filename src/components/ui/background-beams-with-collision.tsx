@@ -144,28 +144,35 @@ export const BackgroundBeamsWithCollision = ({
 
   return (
     <div
-      ref={parentRef}
       className={cn(
         "bg-background relative flex flex-col w-full justify-start overflow-hidden",
         className,
       )}
     >
-      {beams.map((beam) => (
-        <CollisionMechanism
-          key={beam.initialX + "beam-idx"}
-          beamOptions={beam}
-          containerRef={containerRef as React.RefObject<HTMLDivElement>}
-          parentRef={parentRef as React.RefObject<HTMLDivElement>}
-        />
-      ))}
+      {/* Beams constrained to content width — parentRef on this div so explosions share the same coordinate space */}
+      <div className="absolute inset-0 z-0 pointer-events-none flex justify-center">
+        <div
+          ref={parentRef}
+          className="relative w-full max-w-[var(--max-width-page)] h-full"
+        >
+          {beams.map((beam) => (
+            <CollisionMechanism
+              key={beam.initialX + "beam-idx"}
+              beamOptions={beam}
+              containerRef={containerRef as React.RefObject<HTMLDivElement>}
+              parentRef={parentRef as React.RefObject<HTMLDivElement>}
+            />
+          ))}
+          {/* Collision target inside same coordinate space */}
+          <div
+            ref={containerRef}
+            className="absolute bottom-0 w-full inset-x-0 pointer-events-none h-px bg-transparent z-0"
+          />
+        </div>
+      </div>
 
-      {children}
-
-      {/* Collision target — sits at the very bottom of the wrapper */}
-      <div
-        ref={containerRef}
-        className="absolute bottom-0 w-full inset-x-0 pointer-events-none h-px bg-transparent"
-      />
+      {/* Content at z-1 (foreground) */}
+      <div className="relative z-1 flex flex-col flex-1 w-full">{children}</div>
     </div>
   );
 };
@@ -278,8 +285,8 @@ const CollisionMechanism = ({
           repeatDelay: beamOptions.repeatDelay ?? 0,
         }}
         className={cn(
-          "absolute left-0 top-20 m-auto h-14 w-px rounded-full",
-          "bg-gradient-to-t from-primary via-primary/40 to-transparent",
+          "absolute left-0 top-20 m-auto h-14 w-px rounded-full z-1",
+          "bg-linear-to-t from-primary via-primary/40 to-transparent",
           beamOptions.className,
         )}
       />
@@ -301,7 +308,7 @@ const CollisionMechanism = ({
 
 // ✅ Fix: generate spans INSIDE component so randomness refreshes each explosion
 const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
-  const spans = useRef(
+  const [spans] = useState(() =>
     Array.from({ length: 20 }, (_, index) => ({
       id: index,
       directionX: Math.floor(Math.random() * 80 - 40),
@@ -317,9 +324,9 @@ const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
         animate={{ opacity: [0, 1, 0], scaleX: [0, 1, 0] }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="absolute -inset-x-10 top-0 m-auto h-px w-10 rounded-full bg-gradient-to-r from-transparent via-primary to-transparent blur-sm"
+        className="absolute -inset-x-10 top-0 m-auto h-px w-10 rounded-full bg-linear-to-r from-transparent via-primary to-transparent blur-sm"
       />
-      {spans.current.map((span) => (
+      {spans.map((span) => (
         <motion.span
           key={span.id}
           initial={{ x: 0, y: 0, opacity: 1 }}

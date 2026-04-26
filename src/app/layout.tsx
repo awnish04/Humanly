@@ -45,11 +45,13 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <BackgroundBeamsWithCollision className=" flex flex-col w-full h-auto">
             <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <main className="flex-1 w-full">
+          <BackgroundBeamsWithCollision className="flex flex-col flex-1 w-full">
+              {children}
           </BackgroundBeamsWithCollision>
+            </main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
