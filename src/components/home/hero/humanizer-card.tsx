@@ -76,7 +76,7 @@ export function HumanizerCard() {
           aria-label="AI text input"
           aria-describedby="word-count"
           className={cn(
-            "min-h-[300px] lg:min-h-[340px]",
+            "min-h-[300px] lg:min-h-[400px]",
             isOverLimit &&
               "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           )}

@@ -1,13 +1,21 @@
 export const COMPARISON_DATA = {
   before: {
     title: "AI-Generated Text",
-    content: `Artificial intelligence has revolutionized numerous industries in recent years. It is important to note that machine learning algorithms have become increasingly sophisticated. Furthermore, the implementation of AI systems has led to significant improvements in efficiency and productivity. Organizations are leveraging these technologies to optimize their operations. In conclusion, AI represents a transformative force in modern business.`,
-    label: "❌ Robotic & Detectable",
+    content: `Artificial intelligence has revolutionized numerous industries in recent years. It is important to note that machine learning algorithms have become increasingly sophisticated and widely adopted across various sectors. Furthermore, the implementation of AI systems has led to significant improvements in efficiency and productivity metrics.
+
+Organizations are leveraging these technologies to optimize their operations, enhance decision-making processes, and reduce operational costs. In addition, businesses are increasingly relying on data-driven insights to maintain competitive advantages in rapidly evolving markets. `,
+
+    label: "❌ Robotic • Overly Formal • Detectable",
   },
+
   after: {
     title: "Humanized by Humanly",
-    content: `AI's changed everything lately. Machine learning's gotten way smarter, and companies are seeing real results—better efficiency, smoother workflows, the works. Businesses everywhere are jumping on board, using these tools to get ahead. Bottom line? AI's reshaping how we work.`,
-    label: "✓ Natural & Undetectable",
+    content: `AI's changed a lot in the past few years—and not in a subtle way. Machine learning’s gotten seriously smarter, and it’s showing up everywhere, from small startups to huge companies.
+
+Teams are using it to speed things up, make better decisions, and cut down on busywork. Instead of guessing, they’re working with real insights—and it’s helping them move faster and stay competitive.
+`,
+
+    label: "✓ Natural • Conversational • Undetectable",
   },
 };
 
