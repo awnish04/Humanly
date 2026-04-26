@@ -46,7 +46,7 @@ export function HumanizerCard() {
   }, [text, isOverLimit]);
 
   return (
-    <Card className="w-full shadow-2xl gap-0 py-0 overflow-hidden">
+    <Card className="h-full w-full shadow-2xl gap-0 py-0 overflow-hidden">
       {/* Textarea area */}
       <CardContent className="p-4 sm:p-5 pb-3">
         {/* Header row */}
@@ -76,7 +76,7 @@ export function HumanizerCard() {
           aria-label="AI text input"
           aria-describedby="word-count"
           className={cn(
-            "min-h-[200px] sm:min-h-[220px]",
+            "min-h-[300px] lg:min-h-[340px]",
             isOverLimit &&
               "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           )}
@@ -161,7 +161,7 @@ export function HumanizerCard() {
         </div>
 
         {/* Action buttons */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-3">
+        <div className="flex items-start sm:items-center justify-center gap-3">
           <Button
             variant="outline"
             onClick={handleSubmit}

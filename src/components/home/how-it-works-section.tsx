@@ -13,7 +13,7 @@ export function HowItWorksSection() {
           <div className="mb-16 flex flex-col gap-3">
             <Badge
               variant="outline"
-              className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"
+              className="border-primary/30 text-primary"
             >
               ✦ How it works
             </Badge>

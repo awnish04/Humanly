@@ -2,6 +2,7 @@
 
 import { BlurFade } from "@/components/ui/blur-fade";
 import { AuroraText } from "@/components/ui/aurora-text";
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { HeroEyebrow } from "./hero/hero-eyebrow";
 import { HeroSocialProof } from "./hero/hero-social-proof";
 import { HumanizerCard } from "./hero/humanizer-card";
@@ -32,37 +33,38 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="container-page relative z-10 flex flex-col items-center text-center pt-28 pb-16 gap-6">
-        {/* Eyebrow badge */}
-        <BlurFade delay={0} duration={0.4}>
-          <HeroEyebrow />
-        </BlurFade>
+      <ContainerScroll
+        titleComponent={
+          <div className="flex flex-col items-center text-center gap-6">
+            {/* Eyebrow badge */}
+            <BlurFade delay={0} duration={0.4}>
+              <HeroEyebrow />
+            </BlurFade>
 
-        {/* Headline */}
-        <BlurFade delay={0.1} duration={0.5}>
-          <h1 className="text-balance max-w-3xl">
-            Make AI Content Sound <AuroraText>100% Human</AuroraText>
-          </h1>
-        </BlurFade>
+            {/* Headline */}
+            <BlurFade delay={0.1} duration={0.5}>
+              <h1 className="text-balance max-w-3xl">
+                Make AI Content Sound <AuroraText>100% Human</AuroraText>
+              </h1>
+            </BlurFade>
 
-        {/* Sub-headline */}
-        <BlurFade delay={0.2} duration={0.5}>
-          <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
-            Transform robotic ChatGPT or any AI drafts into natural, engaging
-            writing. Works for blogs, emails, and social posts.
-          </p>
-        </BlurFade>
+            {/* Sub-headline */}
+            <BlurFade delay={0.2} duration={0.5}>
+              <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+                Transform robotic ChatGPT or any AI drafts into natural,
+                engaging writing. Works for blogs, emails, and social posts.
+              </p>
+            </BlurFade>
 
-        {/* Social proof */}
-        <BlurFade delay={0.3} duration={0.4}>
-          <HeroSocialProof />
-        </BlurFade>
-
-        {/* Humanizer card */}
-        <BlurFade delay={0.4} duration={0.5} className="w-full max-w-3xl">
-          <HumanizerCard />
-        </BlurFade>
-      </div>
+            {/* Social proof */}
+            <BlurFade delay={0.3} duration={0.4}>
+              <HeroSocialProof />
+            </BlurFade>
+          </div>
+        }
+      >
+        <HumanizerCard />
+      </ContainerScroll>
     </section>
   );
 }
