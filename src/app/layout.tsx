@@ -43,14 +43,14 @@ export default function RootLayout({
         geistMono.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Navbar />
-            <main className="flex-1 w-full">
-          <BackgroundBeamsWithCollision className="flex flex-col flex-1 w-full">
+          <Navbar />
+          <main className="flex-1 w-full">
+            <BackgroundBeamsWithCollision className="flex flex-col flex-1 w-full">
               {children}
-          </BackgroundBeamsWithCollision>
-            </main>
+            </BackgroundBeamsWithCollision>
+          </main>
           <Footer />
         </ThemeProvider>
       </body>

@@ -6,7 +6,7 @@ import { StatCard } from "./stats/stat-card";
 
 export function StatsSection() {
   return (
-    <section aria-label="Stats" className="section relative">
+    <section aria-label="Stats" className="section relative overflow-hidden">
       <div className="container-page">
         <BlurFade delay={0} duration={0.5} inView>
           <div className="mb-12 flex flex-col gap-3">

@@ -39,7 +39,7 @@ export const ContainerScroll = ({
 
   return (
     <div
-      className="h-full flex items-start justify-center relative p-2 md:p-10"
+      className="h-full w-full flex items-start justify-center relative p-2 md:p-10"
       ref={containerRef}
     >
       <div
@@ -60,13 +60,13 @@ export const ContainerScroll = ({
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Header = ({ translate, titleComponent, isMobile }: any) => {
+export const Header = ({ translate, titleComponent }: any) => {
   return (
     <motion.div
       style={{
         translateY: translate,
       }}
-      className="max-w-5xl mx-auto text-center pt-20"
+      className="max-w-4xl mx-auto text-center pt-20"
     >
       {titleComponent}
     </motion.div>
@@ -88,12 +88,10 @@ export const Card = ({
       style={{
         rotateX: rotate,
         scale,
-        boxShadow:
-          "0 0 #0000004d, 0 9px 20px #0000004a, 0 37px 37px #00000042, 0 84px 50px #00000026, 0 149px 60px #0000000a, 0 233px 65px #00000003",
       }}
-      className="max-w-3xl mx-auto w-full border border-border p-2 md:p-3 rounded-2xl shadow-2xl"
+      className="max-w-4xl mx-auto w-full border border-border p-2 md:p-3 rounded-2xl shadow-2xl bg-card"
     >
-      <div className="w-full overflow-hidden">{children}</div>
+      <div className="w-full rounded-xl">{children}</div>
     </motion.div>
   );
 };

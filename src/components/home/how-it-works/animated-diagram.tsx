@@ -12,7 +12,7 @@ import {
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { Circle } from "./circle-node";
 import { HumanlyNode } from "./humanly-node";
-import { Card } from "@/components/ui/card";
+import { Card, CardAction } from "@/components/ui/card";
 
 export function AnimatedDiagram() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,22 +33,24 @@ export function AnimatedDiagram() {
   const socialRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+    <div>
       <div
         ref={containerRef}
-        className="relative flex min-h-[360px] w-full items-center justify-center overflow-hidden p-8 md:p-12"
+        className="relative flex  items-center justify-center p-4 md:p-8"
       >
-        <div className="flex w-full max-w-3xl flex-row items-center justify-between gap-6">
+        <div className="flex w-full max-w-3xl flex-row items-center justify-between gap-3 sm:gap-6">
           {/* Inputs column */}
-          <div className="flex flex-col justify-center gap-6">
+          <div className="flex flex-col justify-center gap-3 sm:gap-6">
             <Circle
               ref={chatgptRef}
               label="ChatGPT"
               sublabel="AI source"
-              className="bg-[#10a37f]/10 border-[#10a37f]/30"
+              className="bg-[#10a37f]/10 border-[#10a37f]/30 shadow-lg shadow-[#10a37f]/20"
             >
-              {/* ChatGPT icon */}
-              <svg viewBox="0 0 24 24" className="size-6 fill-[#10a37f]">
+              <svg
+                viewBox="0 0 24 24"
+                className="size-4 sm:size-5 md:size-6 fill-[#10a37f]"
+              >
                 <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.896zm16.597 3.855l-5.843-3.368L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" />
               </svg>
             </Circle>
@@ -57,9 +59,12 @@ export function AnimatedDiagram() {
               ref={geminiRef}
               label="Gemini"
               sublabel="AI source"
-              className="bg-blue-500/10 border-blue-500/30"
+              className="bg-blue-500/10 border-blue-500/30 shadow-lg shadow-blue-500/20"
             >
-              <svg viewBox="0 0 24 24" className="size-6 fill-blue-500">
+              <svg
+                viewBox="0 0 24 24"
+                className="size-4 sm:size-5 md:size-6 fill-blue-500"
+              >
                 <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm0 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2zm0 3a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7 7 7 0 0 0-7-7z" />
               </svg>
             </Circle>
@@ -68,18 +73,18 @@ export function AnimatedDiagram() {
               ref={pasteRef}
               label="Any AI"
               sublabel="Paste text"
-              className="bg-primary/10 border-primary/30"
+              className="bg-primary/10 border-primary/30 shadow-lg shadow-primary/20 shadow-lg shadow-primary/20"
             >
-              <ClipboardPaste className="size-6 text-primary" />
+              <ClipboardPaste className="size-4 sm:size-5 md:size-6 text-primary" />
             </Circle>
 
             <Circle
               ref={docsRef}
               label="Document"
               sublabel="Upload file"
-              className="bg-orange-500/10 border-orange-500/30"
+              className="bg-orange-500/10 border-orange-500/30 shadow-lg shadow-orange-500/20"
             >
-              <FileText className="size-6 text-orange-500" />
+              <FileText className="size-4 sm:size-5 md:size-6 text-orange-500" />
             </Circle>
           </div>
 
@@ -87,41 +92,41 @@ export function AnimatedDiagram() {
           <HumanlyNode ref={humanlyRef} />
 
           {/* Outputs column */}
-          <div className="flex flex-col justify-center gap-6">
+          <div className="flex flex-col justify-center gap-3 sm:gap-6">
             <Circle
               ref={blogRef}
               label="Blog Post"
               sublabel="SEO-safe"
-              className="bg-primary/10 border-primary/30"
+              className="bg-primary/10 border-primary/30 shadow-lg shadow-primary/20"
             >
-              <BookOpen className="size-6 text-primary" />
+              <BookOpen className="size-4 sm:size-5 md:size-6 text-primary" />
             </Circle>
 
             <Circle
               ref={emailRef}
               label="Email"
               sublabel="Cold outreach"
-              className="bg-primary/10 border-primary/30"
+              className="bg-primary/10 border-primary/30 shadow-lg shadow-primary/20"
             >
-              <Mail className="size-6 text-primary" />
+              <Mail className="size-4 sm:size-5 md:size-6 text-primary" />
             </Circle>
 
             <Circle
               ref={essayRef}
               label="Essay"
               sublabel="Academic"
-              className="bg-primary/10 border-primary/30"
+              className="bg-primary/10 border-primary/30 shadow-lg shadow-primary/20"
             >
-              <CheckCircle className="size-6 text-primary" />
+              <CheckCircle className="size-4 sm:size-5 md:size-6 text-primary" />
             </Circle>
 
             <Circle
               ref={socialRef}
               label="Social"
               sublabel="Captions"
-              className="bg-primary/10 border-primary/30"
+              className="bg-primary/10 border-primary/30 shadow-lg shadow-primary/20"
             >
-              <MessageSquare className="size-6 text-primary" />
+              <MessageSquare className="size-4 sm:size-5 md:size-6 text-primary" />
             </Circle>
           </div>
         </div>
@@ -187,8 +192,8 @@ export function AnimatedDiagram() {
         />
       </div>
 
-      {/* Bottom step cards - replacing the simple labels */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 p-6 border-t border-border bg-muted/30">
+      {/* Bottom step cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 p-4 sm:p-6 border-t border-border bg-muted/30">
         {[
           {
             step: "01",
@@ -207,25 +212,20 @@ export function AnimatedDiagram() {
           },
         ].map((s, i) => (
           <div key={s.step} className="relative">
-            {/* Card */}
-            <Card className="flex flex-col gap-3 p-4 h-full">
-              <span className="text-2xl font-black text-primary leading-none select-none">
+            <Card className="flex flex-col gap-2 sm:gap-3 p-3 sm:p-4 h-full">
+              <span className="text-xl sm:text-2xl font-black text-primary leading-none select-none">
                 {s.step}
               </span>
-
-              <h3 className="text-sm font-semibold text-foreground">
+              <h3 className="text-xs sm:text-sm font-semibold text-foreground">
                 {s.title}
               </h3>
-
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-none">
+              <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed max-w-none">
                 {s.desc}
               </p>
             </Card>
-
-            {/* Arrow (fixed positioning) */}
             {i < 2 && (
               <div className="hidden sm:flex absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="size-6 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shadow-sm">
+                <div className="size-5 sm:size-6 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shadow-sm">
                   <span className="text-primary text-xs">→</span>
                 </div>
               </div>

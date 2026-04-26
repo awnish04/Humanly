@@ -46,9 +46,9 @@ export function HumanizerCard() {
   }, [text, isOverLimit]);
 
   return (
-    <Card className="h-full w-full shadow-2xl gap-0 py-0 overflow-hidden">
+    <Card className="w-full shadow-2xl gap-0 py-0 overflow-hidden flex flex-col min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
       {/* Textarea area */}
-      <CardContent className="p-4 sm:p-5 pb-3">
+      <CardContent className="p-4 sm:p-5 pb-3 flex-1 flex flex-col">
         {/* Header row */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-sm text-muted-foreground">Type or</span>
@@ -76,7 +76,7 @@ export function HumanizerCard() {
           aria-label="AI text input"
           aria-describedby="word-count"
           className={cn(
-            "min-h-[300px] lg:min-h-[400px]",
+            "flex-1 resize-none",
             isOverLimit &&
               "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           )}
@@ -130,7 +130,7 @@ export function HumanizerCard() {
       <div className="divider-gradient mx-4 sm:mx-5" />
 
       {/* Controls */}
-      <CardFooter className="px-4 sm:px-5 py-4 flex-col gap-4 items-stretch">
+      <CardFooter className="px-6 sm:px-8 py-5 flex-col gap-4 items-stretch">
         {/* Intensity slider */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs select-none">

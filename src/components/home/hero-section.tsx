@@ -25,7 +25,7 @@ export function HeroSection() {
             width: "min(640px, 90vw)",
             height: "min(640px, 90vw)",
             background:
-              "radial-gradient(circle, var(--primary) 0%, transparent 70%)",
+              "radial-gradient(circle, var(--primary) 0%, transparent 90%)",
             top: "55%",
             left: "50%",
             transform: "translate(-50%, -50%)",
@@ -43,16 +43,48 @@ export function HeroSection() {
 
             {/* Headline */}
             <BlurFade delay={0.1} duration={0.5}>
-              <h1 className="text-balance max-w-3xl">
-                Make AI Content Sound <AuroraText>100% Human</AuroraText>
+              <h1>
+                Nobody Can Tell <br /> It&apos;s{" "}
+                <AuroraText>AI Anymore</AuroraText>
               </h1>
             </BlurFade>
 
             {/* Sub-headline */}
             <BlurFade delay={0.2} duration={0.5}>
               <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
-                Transform robotic ChatGPT or any AI drafts into natural,
-                engaging writing. Works for blogs, emails, and social posts.
+                Bypass detectors and sound completely natural with content that
+                reads like it was written by a real person.
+              </p>
+            </BlurFade>
+
+            {/* Headline */}
+            <BlurFade delay={0.1} duration={0.5}>
+              <h1>
+                Make It Human. <br /> Make It <AuroraText>Humanly</AuroraText>
+              </h1>
+            </BlurFade>
+
+            {/* Sub-headline */}
+            <BlurFade delay={0.2} duration={0.5}>
+              <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+                Take AI-generated text and turn it into something natural,
+                relatable, and truly human.
+              </p>
+            </BlurFade>
+
+            {/* Headline */}
+            <BlurFade delay={0.1} duration={0.5}>
+              <h1 className="max-w-2xl ">
+                <AuroraText>Humanly -</AuroraText> Nobody Will Know It’s{" "}
+                <AuroraText>AI Anymore</AuroraText>
+              </h1>
+            </BlurFade>
+
+            {/* Sub-headline */}
+            <BlurFade delay={0.2} duration={0.5}>
+              <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+                Bypass detectors and sound completely natural with content that
+                feels like it was written by a real person.
               </p>
             </BlurFade>
 

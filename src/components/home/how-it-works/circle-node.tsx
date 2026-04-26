@@ -10,11 +10,11 @@ export const Circle = forwardRef<
     sublabel?: string;
   }
 >(({ className, children, label, sublabel }, ref) => (
-  <div className="flex flex-col items-center gap-2">
+  <div className="flex flex-col items-center gap-1 sm:gap-2">
     <div
       ref={ref}
       className={cn(
-        "z-10 flex size-14 items-center justify-center rounded-2xl border border-border bg-card shadow-sm",
+        "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center rounded-xl sm:rounded-2xl border ",
         className,
       )}
     >
@@ -22,9 +22,13 @@ export const Circle = forwardRef<
     </div>
     {label && (
       <div className="flex flex-col items-center gap-0.5 text-center">
-        <span className="text-xs font-semibold text-foreground">{label}</span>
+        <span className="text-[9px] sm:text-xs font-semibold text-foreground leading-tight">
+          {label}
+        </span>
         {sublabel && (
-          <span className="text-[10px] text-muted-foreground">{sublabel}</span>
+          <span className="hidden sm:block text-[9px] sm:text-[10px] text-muted-foreground">
+            {sublabel}
+          </span>
         )}
       </div>
     )}

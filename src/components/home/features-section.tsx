@@ -28,8 +28,8 @@ export function FeaturesSection() {
               Everything you need to write freely
             </h2>
             <p className="text-muted-foreground max-w-lg text-base">
-              From academic papers to SEO content Humanly handles every use
-              case with precision and speed.
+              From academic papers to SEO content Humanly handles every use case
+              with precision and speed.
             </p>
           </div>
         </BlurFade>
@@ -47,7 +47,7 @@ export function FeaturesSection() {
 
           {/* Right: Visual panel (desktop only) */}
           <div className="relative hidden md:block md:w-1/2">
-            <Card className="relative overflow-hidden">
+            <Card className="relative overflow-hidden border bg-white/5 backdrop-blur-xs shadow-2xl shadow-primary/10">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeId}

@@ -38,7 +38,7 @@ export function ComparisonSection() {
           </div>
         }
       >
-        <Card className="h-full w-full p-3 sm:p-4 overflow-hidden">
+        <Card className="w-full p-3 sm:p-4 overflow-hidden min-h-[350px] sm:min-h-[420px] lg:min-h-[480px]">
           <Compare
             firstContent={
               <ComparisonCard
@@ -56,7 +56,7 @@ export function ComparisonSection() {
                 variant="after"
               />
             }
-            className="h-[500px] w-full "
+            className="w-full min-h-[500px]"
             slideMode="hover"
             showHandlebar={true}
             initialSliderPercentage={50}
