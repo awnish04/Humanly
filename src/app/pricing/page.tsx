@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -150,39 +151,49 @@ export default function PricingPage() {
             </p>
 
             {/* Billing toggle */}
-            <div className="flex items-center gap-1 rounded-full border border-border bg-muted p-1 mt-2">
-              <button
-                onClick={() => setBilling("monthly")}
-                className={cn(
-                  "px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
-                  billing === "monthly"
-                    ? "bg-primary text-primary-foreground shadow"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBilling("yearly")}
-                className={cn(
-                  "px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                  billing === "yearly"
-                    ? "bg-primary text-primary-foreground shadow"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Yearly
-                <span
-                  className={cn(
-                    "text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors",
-                    billing === "yearly"
-                      ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-primary/10 text-primary",
-                  )}
+            <div className="flex items-center gap-0 rounded-full border border-border bg-muted p-1 mt-2 relative">
+              {(["monthly", "yearly"] as const).map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setBilling(option)}
+                  className="relative z-10 px-5 py-1.5 rounded-full text-sm font-medium transition-colors duration-200 flex items-center gap-2"
                 >
-                  -20%
-                </span>
-              </button>
+                  {/* Sliding background */}
+                  {billing === option && (
+                    <motion.span
+                      layoutId="billing-pill"
+                      className="absolute inset-0 rounded-full bg-primary shadow"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      "relative z-10 transition-colors duration-200",
+                      billing === option
+                        ? "text-primary-foreground"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    {option === "monthly" ? "Monthly" : "Yearly"}
+                  </span>
+                  {option === "yearly" && (
+                    <span
+                      className={cn(
+                        "relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors duration-200",
+                        billing === "yearly"
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-primary/10 text-primary",
+                      )}
+                    >
+                      -20%
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         </BlurFade>

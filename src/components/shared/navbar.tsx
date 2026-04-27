@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,8 @@ const NAV_LINKS = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -49,7 +53,6 @@ export function Navbar() {
         Skip to main content
       </a>
 
-      {/* 3-column grid keeps nav always mathematically centred */}
       <div className="container-page h-full grid grid-cols-3 items-center">
         {/* Logo */}
         <Link
@@ -69,16 +72,52 @@ export function Navbar() {
         <nav
           aria-label="Main navigation"
           className="hidden md:flex items-center justify-center gap-1"
+          onMouseLeave={() => setHovered(null)}
         >
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="nav-link px-3 py-2 text-sm font-medium rounded-md"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href;
+            const isHovered = hovered === link.href;
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onMouseEnter={() => setHovered(link.href)}
+                className="relative px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150"
+              >
+                {/* Hover background pill */}
+                {isHovered && !isActive && (
+                  <motion.span
+                    layoutId="nav-hover"
+                    className="absolute inset-0 rounded-lg bg-muted"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+
+                {/* Active indicator */}
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-active"
+                    className="absolute inset-0 rounded-lg bg-primary/10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+
+                <span
+                  className={cn(
+                    "relative z-10 transition-colors duration-150",
+                    isActive
+                      ? "text-primary font-semibold"
+                      : isHovered
+                        ? "text-foreground"
+                        : "text-muted-foreground",
+                  )}
+                >
+                  {link.label}
+                </span>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Mobile: placeholder keeps grid balanced */}
@@ -131,16 +170,24 @@ export function Navbar() {
         )}
       >
         <nav className="container-page flex flex-col gap-1 py-4">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className={cn(
+                  "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
             <Link
               href="/login"
