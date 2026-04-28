@@ -131,7 +131,7 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
 
   return (
-    <main className="section pt-28">
+    <main className=" pt-40">
       <div className="container-page flex flex-col gap-16">
         {/* Header */}
         <BlurFade delay={0} duration={0.5} inView>
