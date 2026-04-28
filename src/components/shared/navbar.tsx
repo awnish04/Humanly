@@ -77,35 +77,29 @@ export function Navbar() {
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             const isHovered = hovered === link.href;
+            // Show pill on this link if hovered, or if active and nothing is hovered
+            const showPill = isHovered || (isActive && !hovered);
 
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onMouseEnter={() => setHovered(link.href)}
-                className="relative px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150"
+                className="relative px-3 py-2 text-sm font-medium rounded-lg"
               >
-                {/* Hover background pill */}
-                {isHovered && !isActive && (
+                {showPill && (
                   <motion.span
-                    layoutId="nav-hover"
-                    className="absolute inset-0 rounded-lg bg-muted"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    layoutId="nav-pill"
+                    className={cn(
+                      "absolute inset-0 rounded-lg",
+                      isActive ? "bg-primary/10" : "bg-muted",
+                    )}
+                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
                   />
                 )}
-
-                {/* Active indicator */}
-                {isActive && (
-                  <motion.span
-                    layoutId="nav-active"
-                    className="absolute inset-0 rounded-lg bg-primary/10"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-
                 <span
                   className={cn(
-                    "relative z-10 transition-colors duration-150",
+                    "relative z-10 transition-colors duration-100",
                     isActive
                       ? "text-primary font-semibold"
                       : isHovered

@@ -5,11 +5,9 @@ import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Marquee } from "@/components/ui/marquee";
-import {
-  TESTIMONIALS,
-  type Testimonial,
-} from "./testimonials/testimonials-data";
-import { Card } from "../ui/card";
+import { Testimonial, TESTIMONIALS } from "./testimonials-data";
+import { Card } from "@/components/ui/card";
+
 
 const col1 = TESTIMONIALS.slice(0, 4);
 const col2 = TESTIMONIALS.slice(4, 8);
