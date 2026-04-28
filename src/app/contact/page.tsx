@@ -20,7 +20,7 @@ export default function ContactPage() {
       {/* Hero */}
       <section
         aria-label="Contact hero"
-        className="relative flex flex-col items-center justify-center overflow-hidden pt-32 pb-16"
+        className="relative flex flex-col items-center justify-center overflow-hidden pt-32"
       >
         {/* Background glow */}
         <div
