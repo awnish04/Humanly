@@ -12,7 +12,7 @@ export function HeroSection() {
     <section
       id="main-content"
       aria-label="AI Text Humanizer"
-      className="relative flex flex-col items-center justify-center overflow-hidden"
+      className="section relative flex flex-col items-center justify-center overflow-hidden"
     >
       {/* Background glow */}
       <div

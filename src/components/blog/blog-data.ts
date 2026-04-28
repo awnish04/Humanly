@@ -12,7 +12,7 @@ export interface Post {
 
 export const POSTS: Post[] = [
   {
-    id: "post-1",
+    id: "make-chatgpt-undetectable",
     title: "How to Make ChatGPT Text Undetectable in 2024",
     summary:
       "AI detectors are getting smarter — but so are humanization tools. Here's a step-by-step guide to making your ChatGPT output pass every major detector without losing quality.",
@@ -25,7 +25,7 @@ export const POSTS: Post[] = [
     readTime: "5 min read",
   },
   {
-    id: "post-2",
+    id: "gptzero-vs-turnitin",
     title: "GPTZero vs Turnitin: Which AI Detector is Harder to Beat?",
     summary:
       "We ran 500 AI-generated samples through both detectors and analyzed the results. The findings might surprise you — and change how you approach humanization.",
@@ -38,7 +38,7 @@ export const POSTS: Post[] = [
     readTime: "8 min read",
   },
   {
-    id: "post-3",
+    id: "ai-writing-patterns",
     title: "The Science Behind AI Writing Patterns",
     summary:
       "Why do AI detectors work? We break down the linguistic fingerprints that give AI text away — and explain exactly how Humanly eliminates them.",
@@ -51,7 +51,7 @@ export const POSTS: Post[] = [
     readTime: "10 min read",
   },
   {
-    id: "post-4",
+    id: "ai-content-marketing",
     title: "5 Ways to Use AI for Content Marketing Without Getting Flagged",
     summary:
       "Content marketers are embracing AI — but detection risks are real. Here are five proven strategies to scale your content production while keeping everything undetectable.",
@@ -64,7 +64,7 @@ export const POSTS: Post[] = [
     readTime: "6 min read",
   },
   {
-    id: "post-5",
+    id: "academic-ai-writing",
     title: "Academic Writing with AI: What's Allowed and What Isn't",
     summary:
       "Universities are updating their AI policies fast. We surveyed 50 institutions to map out what's acceptable — and how students can use AI tools responsibly.",
@@ -77,7 +77,7 @@ export const POSTS: Post[] = [
     readTime: "7 min read",
   },
   {
-    id: "post-6",
+    id: "seo-ai-writing",
     title: "How SEO Agencies Are Using AI Without Losing Rankings",
     summary:
       "Google's helpful content update changed everything. Here's how top SEO agencies are using AI-assisted writing while maintaining their search rankings.",

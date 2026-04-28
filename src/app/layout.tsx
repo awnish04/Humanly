@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Oxanium } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthToast } from "@/components/shared/auth-toast";
 
 const oxanium = Oxanium({
   subsets: ["latin"],
@@ -44,15 +47,19 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Navbar />
-          <main className="flex-1 w-full">
-            <BackgroundBeamsWithCollision className="flex flex-col flex-1 w-full">
-              {children}
-            </BackgroundBeamsWithCollision>
-          </main>
-          <Footer />
-        </ThemeProvider>
+        <ClerkProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Navbar />
+            <AuthToast />
+            <main className="flex-1 w-full">
+              <BackgroundBeamsWithCollision className="flex flex-col flex-1 w-full">
+                {children}
+              </BackgroundBeamsWithCollision>
+            </main>
+            <Footer />
+            <Toaster richColors position="top-center" />
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

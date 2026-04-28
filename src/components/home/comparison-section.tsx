@@ -10,7 +10,7 @@ import { Card } from "../ui/card";
 
 export function ComparisonSection() {
   return (
-    <section aria-label="Before After Comparison" className="relative">
+    <section aria-label="Before After Comparison" className="section relative">
       <ContainerScroll
         titleComponent={
           <div className="flex flex-col gap-3 items-center text-center">

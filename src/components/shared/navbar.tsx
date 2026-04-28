@@ -5,9 +5,12 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion } from "motion/react";
+import { useAuth } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "./user-menu";
+import { AuthToast } from "./auth-toast";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -20,6 +23,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const pathname = usePathname();
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -68,7 +72,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav */}
         <nav
           aria-label="Main navigation"
           className="hidden md:flex items-center justify-center gap-1"
@@ -77,9 +81,7 @@ export function Navbar() {
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             const isHovered = hovered === link.href;
-            // Show pill on this link if hovered, or if active and nothing is hovered
             const showPill = isHovered || (isActive && !hovered);
-
             return (
               <Link
                 key={link.href}
@@ -114,39 +116,47 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Mobile: placeholder keeps grid balanced */}
         <div className="md:hidden" />
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-2">
-          <div className="hidden md:flex items-center gap-2">
-            <Link
-              href="/login"
-              className="px-3 py-1.5 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-muted"
-            >
-              Log in
-            </Link>
-            <Link href="/signup">
-              <Button>Try for free</Button>
-            </Link>
-          </div>
-
+          <AuthToast />
           <AnimatedThemeToggler
             variant="circle"
             className="flex size-8 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 [&_svg]:size-4"
           />
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+          {isSignedIn ? (
+            <UserMenu />
+          ) : (
+            <>
+              <div className="hidden md:flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="px-3 py-1.5 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-muted"
+                >
+                  Log in
+                </Link>
+                <Link href="/login">
+                  <Button>Try for free</Button>
+                </Link>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-menu"
+                onClick={() => setMenuOpen((v) => !v)}
+              >
+                {menuOpen ? (
+                  <X className="size-5" />
+                ) : (
+                  <Menu className="size-5" />
+                )}
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -182,18 +192,20 @@ export function Navbar() {
               </Link>
             );
           })}
-          <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              Log in
-            </Link>
-            <Link href="/signup" onClick={() => setMenuOpen(false)}>
-              <Button className="w-full">Try for free</Button>
-            </Link>
-          </div>
+          {!isSignedIn && (
+            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                Log in
+              </Link>
+              <Link href="/login" onClick={() => setMenuOpen(false)}>
+                <Button className="w-full">Try for free</Button>
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
     </header>
