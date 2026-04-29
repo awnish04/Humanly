@@ -4,9 +4,8 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LogOut, Settings, LayoutDashboard, User } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 export function UserMenu() {
   const { user } = useUser();
@@ -14,7 +13,6 @@ export function UserMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -26,7 +24,7 @@ export function UserMenu() {
   }, []);
 
   const handleSignOut = async () => {
-    await signOut();
+    await signOut({ redirectUrl: "/" });
     toast.success("Signed out successfully");
   };
 
@@ -39,7 +37,7 @@ export function UserMenu() {
   const email = user?.emailAddresses?.[0]?.emailAddress ?? "";
 
   return (
-    <div ref={ref} className="relative flex items-center justify-end gap-2">
+    <div ref={ref} className="relative flex items-center justify-end">
       <button
         onClick={() => setOpen((v) => !v)}
         className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -54,12 +52,12 @@ export function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-64 rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
+        <div className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
           {/* User info */}
-          <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
-            <Avatar className="size-10">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+            <Avatar className="size-8">
               <AvatarImage src={user?.imageUrl} alt={name} />
-              <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
@@ -71,26 +69,16 @@ export function UserMenu() {
             </div>
           </div>
 
-          {/* Menu items */}
+          {/* Dashboard link */}
           <div className="py-1">
-            <MenuItem
+            <Link
               href="/dashboard"
-              icon={LayoutDashboard}
-              label="Dashboard"
               onClick={() => setOpen(false)}
-            />
-            <MenuItem
-              href="/account"
-              icon={User}
-              label="Account"
-              onClick={() => setOpen(false)}
-            />
-            <MenuItem
-              href="/settings"
-              icon={Settings}
-              label="Settings"
-              onClick={() => setOpen(false)}
-            />
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+            >
+              <LayoutDashboard className="size-4 text-muted-foreground" />
+              Dashboard
+            </Link>
           </div>
 
           {/* Sign out */}
@@ -106,28 +94,5 @@ export function UserMenu() {
         </div>
       )}
     </div>
-  );
-}
-
-function MenuItem({
-  href,
-  icon: Icon,
-  label,
-  onClick,
-}: {
-  href: string;
-  icon: React.ElementType;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-    >
-      <Icon className="size-4 text-muted-foreground" />
-      {label}
-    </Link>
   );
 }

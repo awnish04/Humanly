@@ -18,6 +18,9 @@ const NAV_LINKS = [
   { label: "Contact", href: "/contact" },
 ];
 
+// Routes that use the dashboard layout (no navbar/footer)
+const DASHBOARD_ROUTES = ["/dashboard", "/account", "/settings"];
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,6 +42,10 @@ export function Navbar() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Hide on dashboard routes — must be AFTER all hooks
+  const isDashboard = DASHBOARD_ROUTES.some((r) => pathname.startsWith(r));
+  if (isDashboard) return null;
 
   return (
     <header

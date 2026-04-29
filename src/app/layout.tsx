@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Navbar } from "@/components/shared/navbar";
-import { Footer } from "@/components/shared/footer";
+import { FooterWrapper } from "@/components/shared/footer-wrapper";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthToast } from "@/components/shared/auth-toast";
@@ -40,6 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={cn(
         "h-full antialiased font-sans",
         oxanium.variable,
@@ -56,7 +57,7 @@ export default function RootLayout({
                 {children}
               </BackgroundBeamsWithCollision>
             </main>
-            <Footer />
+            <FooterWrapper />
             <Toaster richColors position="top-center" />
           </ThemeProvider>
         </ClerkProvider>

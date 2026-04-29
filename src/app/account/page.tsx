@@ -1,34 +1,26 @@
 "use client";
 
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
-import { User, Globe, Lock, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-const TABS = [
-  { id: "profile", label: "Profile", icon: User },
-  { id: "plan", label: "Plan & Limits", icon: Globe },
-  { id: "security", label: "Security", icon: Lock },
-  { id: "danger", label: "Danger Zone", icon: AlertTriangle },
-];
+import Link from "next/link";
 
 export default function AccountPage() {
   const { user } = useUser();
-  const { signOut } = useClerk();
-  const [activeTab, setActiveTab] = useState("profile");
-  const [displayName, setDisplayName] = useState(user?.fullName ?? "");
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSaveProfile = async () => {
     try {
-      const parts = displayName.trim().split(" ");
       await user?.update({
-        firstName: parts[0],
-        lastName: parts.slice(1).join(" ") || undefined,
+        firstName: firstName.trim(),
+        lastName: lastName.trim() || undefined,
       });
       toast.success("Profile updated successfully");
     } catch {
@@ -36,200 +28,207 @@ export default function AccountPage() {
     }
   };
 
+  const handleUpdatePassword = () => {
+    if (!newPassword || newPassword !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    toast.info("Password update requires email verification.");
+  };
+
   const handleDeleteAccount = async () => {
     if (!confirm("Are you sure? This action cannot be undone.")) return;
     try {
       await user?.delete();
-      toast.success("Account deleted");
     } catch {
       toast.error("Failed to delete account");
     }
   };
 
   return (
-    <main className="pt-28 section">
-      <div className="container-page">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-black text-foreground">
-            Account Settings
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your profile, security, and preferences.
-          </p>
-        </div>
+    <main className="p-6 md:p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
+        <p className="text-muted-foreground mt-0.5 text-sm">
+          Manage your profile, security, and account.
+        </p>
+      </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 max-w-4xl mx-auto">
-          {/* Sidebar */}
-          <aside className="lg:w-56 shrink-0">
-            <nav className="flex flex-col gap-1">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left",
-                    activeTab === tab.id
-                      ? tab.id === "danger"
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  <tab.icon className="size-4" />
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-          </aside>
-
-          {/* Content */}
-          <div className="flex-1">
-            {activeTab === "profile" && (
-              <Card className="p-6 flex flex-col gap-6">
-                <div>
-                  <h2 className="text-lg font-bold text-foreground">
-                    Profile Information
-                  </h2>
-                  <div className="h-px bg-border mt-3" />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <Label>Email Address</Label>
-                    <Input
-                      value={user?.emailAddresses?.[0]?.emailAddress ?? ""}
-                      disabled
-                      className="bg-muted/50"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Email cannot be changed via settings.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="displayName">Display Name</Label>
-                    <Input
-                      id="displayName"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <Button onClick={handleSaveProfile} className="w-fit">
-                    Save Changes
-                  </Button>
-                </div>
-              </Card>
-            )}
-
-            {activeTab === "plan" && (
-              <Card className="p-6 flex flex-col gap-6">
-                <div>
-                  <h2 className="text-lg font-bold text-foreground">
-                    Plan & Usage
-                  </h2>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Overview of your current subscription and monthly usage.
-                  </p>
-                  <div className="h-px bg-border mt-3" />
-                </div>
-                <Button className="w-fit" variant="outline">
-                  Free Plan
-                </Button>
-                <div className="rounded-xl border border-border p-5 flex flex-col gap-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    Monthly Word Limit
-                  </p>
-                  <div className="flex items-end justify-between">
-                    <p className="text-2xl font-black text-foreground">
-                      0{" "}
-                      <span className="text-sm font-normal text-muted-foreground">
-                        / 500 used
-                      </span>
-                    </p>
-                    <p className="text-primary font-bold">
-                      500{" "}
-                      <span className="text-xs text-muted-foreground font-normal">
-                        words remaining
-                      </span>
-                    </p>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full"
-                      style={{ width: "0%" }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>0%</span>
-                    <span>50%</span>
-                    <span>100%</span>
-                  </div>
-                </div>
-                <Button className="w-full">Upgrade to Pro</Button>
-              </Card>
-            )}
-
-            {activeTab === "security" && (
-              <Card className="p-6 flex flex-col gap-6">
-                <div>
-                  <h2 className="text-lg font-bold text-foreground">
-                    Change Password
-                  </h2>
-                  <div className="h-px bg-border mt-3" />
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      placeholder="Min. 8 characters"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="confirmPassword">
-                      Confirm New Password
-                    </Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      placeholder="Re-enter new password"
-                    />
-                  </div>
-                  <Button
-                    className="w-fit"
-                    onClick={() =>
-                      toast.info("Password update requires email verification.")
-                    }
-                  >
-                    Update Password
-                  </Button>
-                </div>
-              </Card>
-            )}
-
-            {activeTab === "danger" && (
-              <Card className="p-6 flex flex-col gap-4 border-destructive/30">
-                <div>
-                  <h2 className="text-lg font-bold text-foreground">
-                    Delete Account
-                  </h2>
-                  <div className="h-px bg-border mt-3" />
-                </div>
-                <p className="text-sm text-muted-foreground max-w-none">
-                  Once you delete your account, there is no going back. Please
-                  be certain.
-                </p>
-                <Button
-                  variant="destructive"
-                  className="w-fit"
-                  onClick={handleDeleteAccount}
-                >
-                  Delete My Account
-                </Button>
-              </Card>
-            )}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        {/* ── Profile Information ── */}
+        <Card className="p-6 flex flex-col gap-5">
+          <div>
+            <h2 className="text-base font-bold text-foreground">
+              Profile Information
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Update your account&apos;s profile information.
+            </p>
+            <div className="h-px bg-border mt-3" />
           </div>
-        </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="First name"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Last name"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label>Email Address</Label>
+            <Input
+              value={user?.emailAddresses?.[0]?.emailAddress ?? ""}
+              disabled
+              className="bg-muted/50"
+            />
+            <p className="text-xs text-muted-foreground">
+              Email cannot be changed via settings.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label>Language</Label>
+            <select className="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground">
+              <option>English</option>
+              <option>Spanish</option>
+              <option>French</option>
+            </select>
+          </div>
+
+          <Button onClick={handleSaveProfile} className="w-fit">
+            Save
+          </Button>
+        </Card>
+
+        {/* ── Update Password ── */}
+        <Card className="p-6 flex flex-col gap-5">
+          <div>
+            <h2 className="text-base font-bold text-foreground">
+              Update Password
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Ensure your account is using a long, random password to stay
+              secure.
+            </p>
+            <div className="h-px bg-border mt-3" />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Min. 8 characters"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Re-enter new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Button onClick={handleUpdatePassword} className="w-fit">
+            Save
+          </Button>
+        </Card>
+
+        {/* ── Plan & Usage ── */}
+        <Card className="p-6 flex flex-col gap-5">
+          <div>
+            <h2 className="text-base font-bold text-foreground">
+              Plan & Usage
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Overview of your current subscription and monthly usage.
+            </p>
+            <div className="h-px bg-border mt-3" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-xl border border-border p-4 flex flex-col gap-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
+                Current Plan
+              </p>
+              <p className="text-xl font-black text-primary">Free</p>
+              <Link
+                href="/pricing"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
+              >
+                → Upgrade Plan
+              </Link>
+            </div>
+            <div className="rounded-xl border border-border p-4 flex flex-col gap-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
+                Words Remaining
+              </p>
+              <p className="text-xl font-black text-foreground">500</p>
+              <p className="text-xs text-muted-foreground">
+                0 / 500 used this month
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Usage</span>
+              <span>0%</span>
+            </div>
+            <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full"
+                style={{ width: "0%" }}
+              />
+            </div>
+          </div>
+
+          <Link href="/pricing" className="w-fit">
+            <Button>Upgrade to Pro</Button>
+          </Link>
+        </Card>
+
+        {/* ── Danger Zone ── */}
+        <Card className="p-6 flex flex-col gap-4 border-destructive/30">
+          <div>
+            <h2 className="text-base font-bold text-destructive">
+              Danger Zone
+            </h2>
+            <div className="h-px bg-border mt-3" />
+          </div>
+          <p className="text-sm text-muted-foreground max-w-none">
+            Once you delete your account, there is no going back. Please be
+            certain.
+          </p>
+          <Button
+            variant="destructive"
+            className="w-fit"
+            onClick={handleDeleteAccount}
+          >
+            Delete My Account
+          </Button>
+        </Card>
       </div>
     </main>
   );
