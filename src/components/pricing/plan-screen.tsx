@@ -53,7 +53,10 @@ export function PlanScreen({ plan, billing }: PlanScreenProps) {
   };
 
   return (
-    <div className="h-full w-full bg-background flex flex-col overflow-hidden px-5 pt-18 pb-5 gap-3">
+    <div
+      className="h-full w-full bg-background flex flex-col overflow-hidden px-4 pb-4 gap-1"
+      style={{ paddingTop: "10%" }}
+    >
       {/* Plan name + desc */}
       <div className="flex flex-col gap-0.5 shrink-0">
         <h3>{plan.name}</h3>
@@ -63,21 +66,21 @@ export function PlanScreen({ plan, billing }: PlanScreenProps) {
       </div>
 
       {/* Price */}
-      <div className="flex items-end gap-1 leading-none shrink-0">
+      <div className="flex items-end gap-0.5 leading-none shrink-0">
         <h3 className={cn("self-start mt-1", plan.accentColor)}>$</h3>
-        <h1 className={cn("tabular-nums leading-none", plan.accentColor)}>
-          <NumberTicker value={price} />
-        </h1>
-        <p className="mb-2">/month</p>
+        <h2 className={cn("tabular-nums leading-none", plan.accentColor)}>
+          <NumberTicker value={price} decimalPlaces={2} />
+        </h2>
+        <p className="mb-1">/month</p>
       </div>
 
-      <Separator className="my-2" />
+      <Separator />
 
       {/* Features */}
-      <ul className="flex flex-col gap-4 flex-1 min-h-0 overflow-hidden">
+      <ul className="flex flex-col gap-1 flex-1 pt-2  overflow-hidden">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className={cn("size-4 mt-0.5 shrink-0", plan.accentColor)} />
+            <Check className={cn("size-3 mt-0.5 shrink-0", plan.accentColor)} />
             <span className="text-sm text-foreground/80 leading-tight">
               {f}
             </span>

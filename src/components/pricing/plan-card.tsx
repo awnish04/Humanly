@@ -30,7 +30,7 @@ export function PlanCard({ plan, billing }: PlanCardProps) {
       </div>
 
       {/* iPhone IS the card */}
-      <div className={cn(plan.highlight ? "w-80" : "w-72")}>
+      <div className={cn(plan.highlight ? "w-[21rem]" : "w-[19rem]")}>
         <Iphone>
           <PlanScreen plan={plan} billing={billing} />
         </Iphone>

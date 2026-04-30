@@ -129,7 +129,7 @@ export function Iphone({
           />
           <path
             d="M6 74C6 35.3401 37.3401 4 76 4H356C394.66 4 426 35.3401 426 74V808C426 846.66 394.66 878 356 878H76C37.3401 878 6 846.66 6 808V74Z"
-            className="fill-white dark:fill-[#262626]"
+            className="fill-[#EFEFEF] dark:fill-[#2C2C2C]"
           />
         </g>
 
@@ -147,15 +147,15 @@ export function Iphone({
 
         <path
           d="M154 48.5C154 38.2827 162.283 30 172.5 30H259.5C269.717 30 278 38.2827 278 48.5C278 58.7173 269.717 67 259.5 67H172.5C162.283 67 154 58.7173 154 48.5Z"
-          className="fill-[#F5F5F5] dark:fill-[#262626]"
+          className="fill-[#D8D8D8] dark:fill-[#3A3A3A]"
         />
         <path
           d="M249 48.5C249 42.701 253.701 38 259.5 38C265.299 38 270 42.701 270 48.5C270 54.299 265.299 59 259.5 59C253.701 59 249 54.299 249 48.5Z"
-          className="fill-[#F5F5F5] dark:fill-[#262626]"
+          className="fill-[#D8D8D8] dark:fill-[#3A3A3A]"
         />
         <path
           d="M254 48.5C254 45.4624 256.462 43 259.5 43C262.538 43 265 45.4624 265 48.5C265 51.5376 262.538 54 259.5 54C256.462 54 254 51.5376 254 48.5Z"
-          className="fill-[#E5E5E5] dark:fill-[#404040]"
+          className="fill-[#C8C8C8] dark:fill-[#484848]"
         />
 
         <defs>
