@@ -1,185 +1,300 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
-import { ClipboardPaste } from "lucide-react";
-import { MAX_WORDS, INTENSITY_STEPS, countWords } from "./hero-data";
+import { Copy, X, Sparkles, ScanSearch } from "lucide-react";
+import { toast } from "sonner";
+import { MAX_WORDS, countWords } from "./hero-data";
+
+// ── AI score heuristic ────────────────────────────────────────────────────────
+function estimateAiScore(text: string): number {
+  if (!text.trim()) return 0;
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+  if (!sentences.length) return 0;
+  let score = 0;
+  const lengths = sentences.map((s) => s.trim().split(/\s+/).length);
+  const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+  const variance =
+    lengths.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / lengths.length;
+  if (variance < 10) score += 25;
+  else if (variance < 25) score += 10;
+  const aiPhrases = [
+    /\bit is important to note\b/i,
+    /\bfurthermore\b/i,
+    /\bmoreover\b/i,
+    /\bin conclusion\b/i,
+    /\bin summary\b/i,
+    /\boverall\b/i,
+    /\bsignificant(ly)?\b/i,
+    /\bultimately\b/i,
+    /\bnevertheless\b/i,
+    /\bin addition\b/i,
+    /\bto summarize\b/i,
+    /\bit should be noted\b/i,
+  ];
+  score += Math.min(aiPhrases.filter((p) => p.test(text)).length * 8, 40);
+  const words = text.trim().split(/\s+/).length;
+  if ((text.match(/\b\w+'\w+\b/g) ?? []).length / words < 0.01) score += 15;
+  if (
+    (text.match(/\b(is|are|was|were|be|been|being)\s+\w+ed\b/gi) ?? []).length /
+      sentences.length >
+    0.5
+  )
+    score += 10;
+  if (
+    (text.match(/\b(I|we|my|our|I've|we've|I'm|we're)\b/g) ?? []).length === 0
+  )
+    score += 10;
+  return Math.min(score, 100);
+}
+
+function AiScoreBadge({ score }: { score: number }) {
+  const label =
+    score >= 70 ? "Likely AI" : score >= 40 ? "Mixed" : "Likely Human";
+  const color =
+    score >= 70
+      ? "bg-destructive/10 text-destructive border-destructive/30"
+      : score >= 40
+        ? "bg-yellow-500/10 text-yellow-600 border-yellow-500/30 dark:text-yellow-400"
+        : "bg-primary/10 text-primary border-primary/30";
+  return (
+    <div
+      className={cn(
+        "inline-flex items-center gap-2 px-2.5 py-1 rounded-lg border text-xs font-semibold",
+        color,
+      )}
+    >
+      <span>
+        {score}% AI · {label}
+      </span>
+      <div className="w-12 h-1.5 rounded-full bg-current/20 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-current transition-all duration-500"
+          style={{ width: `${score}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function HumanizerCard() {
-  const [text, setText] = useState("");
-  const [intensity, setIntensity] = useState(50);
-  const [error, setError] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [inputText, setInputText] = useState("");
+  const [results, setResults] = useState<string[]>([]);
+  const [activeOption, setActiveOption] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [aiScore, setAiScore] = useState<number | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const wordCount = countWords(text);
+  const wordCount = countWords(inputText);
   const isOverLimit = wordCount > MAX_WORDS;
+  const outputText = results[activeOption] ?? "";
+  const outputWordCount = countWords(outputText);
 
-  const intensityLabel =
-    INTENSITY_STEPS.find((s) => s.value === intensity)?.label ??
-    (intensity < 50 ? "Basic" : intensity < 100 ? "Enhanced" : "Aggressive");
-
-  const handlePaste = useCallback(async () => {
+  const handleClear = () => {
+    setInputText("");
+    setResults([]);
+    setActiveOption(0);
+    setAiScore(null);
+  };
+  const handleCopyOutput = async () => {
+    if (!outputText) return;
     try {
-      const clip = await navigator.clipboard.readText();
-      setText(clip);
-      setError("");
+      await navigator.clipboard.writeText(outputText);
+      toast.success("Copied!");
     } catch {
-      textareaRef.current?.focus();
+      toast.error("Failed to copy");
     }
-  }, []);
-
-  const handleSubmit = useCallback(() => {
-    if (!text.trim()) {
-      setError("Please enter some text to humanize.");
+  };
+  const handleDetect = () => {
+    if (!inputText.trim()) {
+      toast.error("Enter text to check");
+      return;
+    }
+    setDetecting(true);
+    setTimeout(() => {
+      setAiScore(estimateAiScore(inputText));
+      setDetecting(false);
+    }, 600);
+  };
+  const handleHumanize = async () => {
+    if (!inputText.trim()) {
+      toast.error("Please enter some text");
       return;
     }
     if (isOverLimit) {
-      setError(`Reduce text to ${MAX_WORDS} words or fewer.`);
+      toast.error(`Max ${MAX_WORDS} words`);
       return;
     }
-    setError("");
-    alert("Humanizing… (API integration pending)");
-  }, [text, isOverLimit]);
+    setLoading(true);
+    setAiScore(null);
+    try {
+      const res = await fetch("/api/humanize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: inputText }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error ?? "Failed");
+        return;
+      }
+      setResults((data.results as { text: string }[]).map((r) => r.text));
+      setActiveOption(0);
+      toast.success("Done! 🎉");
+    } catch {
+      toast.error("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Card className="w-full shadow-2xl gap-0 py-0 overflow-hidden flex flex-col min-h-[420px] sm:min-h-[520px] lg:min-h-[600px]">
-      {/* Textarea area */}
-      <CardContent className="p-4 sm:p-5 pb-3 flex-1 flex flex-col">
-        {/* Header row */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-sm text-muted-foreground">Type or</span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePaste}
-            className="h-7 px-2.5 text-xs gap-1.5 rounded-md"
-          >
-            <ClipboardPaste className="size-3" />
-            Paste
-          </Button>
-        </div>
-
-        {/* Textarea */}
-        <Textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            if (error) setError("");
-          }}
-          placeholder="Paste your AI-generated text here…"
-          rows={8}
-          aria-label="AI text input"
-          aria-describedby="word-count"
-          className={cn(
-            "flex-1 resize-none",
-            isOverLimit &&
-              "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
-          )}
-        />
-
-        {/* Word count + progress bar */}
-        <div className="mt-2 space-y-1.5">
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">
-              {wordCount > 0 && (
-                <span
-                  className={cn(isOverLimit && "text-destructive font-medium")}
-                >
-                  {wordCount} word{wordCount !== 1 ? "s" : ""}
-                </span>
-              )}
+    <div className="w-full rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
+      {/* Both panels use the same 3-row grid: header / textarea / footer */}
+      <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-border">
+        {/* ── LEFT ── */}
+        <div className="grid grid-rows-[44px_1fr_52px]">
+          {/* Header — 44px */}
+          <div className="flex items-center px-4 border-b border-border">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Input
             </span>
-            <div
-              id="word-count"
-              aria-live="polite"
+            {aiScore !== null && (
+              <span className="ml-3">
+                <AiScoreBadge score={aiScore} />
+              </span>
+            )}
+          </div>
+
+          {/* Textarea */}
+          <textarea
+            ref={inputRef}
+            value={inputText}
+            onChange={(e) => {
+              setInputText(e.target.value);
+              setAiScore(null);
+            }}
+            placeholder="Paste your AI-generated text here…"
+            className={cn(
+              "w-full h-full resize-none bg-background p-4 text-sm text-foreground placeholder:text-muted-foreground outline-none border-0 min-h-[380px] sm:min-h-[460px] lg:min-h-[520px]",
+              isOverLimit && "text-destructive",
+            )}
+          />
+
+          {/* Footer — 52px */}
+          <div className="flex items-center justify-between gap-2 px-4 border-t border-border">
+            <span
               className={cn(
-                "text-xs font-mono tabular-nums",
+                "text-xs",
                 isOverLimit
                   ? "text-destructive font-semibold"
                   : "text-muted-foreground",
               )}
             >
-              {wordCount} / {MAX_WORDS}
+              {wordCount} / {MAX_WORDS} words
+            </span>
+            <div className="flex items-center gap-2">
+              {inputText && (
+                <button
+                  onClick={handleClear}
+                  className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="size-3" /> Clear
+                </button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDetect}
+                disabled={detecting || !inputText.trim()}
+                className="gap-1.5 h-7 px-2.5 text-xs"
+              >
+                {detecting ? (
+                  <span className="size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <ScanSearch className="size-3.5" />
+                )}
+                Check AI
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleHumanize}
+                disabled={isOverLimit || loading || !inputText.trim()}
+                className="gap-1.5 h-7 px-2.5 text-xs"
+              >
+                {loading ? (
+                  <>
+                    <span className="size-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Humanizing…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="size-3.5" />
+                    Humanize AI
+                  </>
+                )}
+              </Button>
             </div>
           </div>
-          {/* Progress bar */}
-          <div className="h-0.5 w-full rounded-full bg-muted overflow-hidden">
-            <div
+        </div>
+
+        {/* ── RIGHT ── */}
+        <div className="grid grid-rows-[44px_1fr_52px] border-t md:border-t-0 border-border">
+          {/* Header — 44px */}
+          <div className="flex items-center justify-between px-4 border-b border-border">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              {outputText ? "Result" : "Output"}
+            </span>
+            {results.length > 1 && (
+              <div className="flex items-center gap-1">
+                {results.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveOption(i)}
+                    className={cn(
+                      "px-2 py-0.5 rounded-md text-xs font-medium transition-colors",
+                      activeOption === i
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Output */}
+          <div className="overflow-y-auto bg-background p-4 min-h-[380px] sm:min-h-[460px] lg:min-h-[520px]">
+            <p
               className={cn(
-                "h-full rounded-full transition-all duration-300",
-                isOverLimit
-                  ? "bg-destructive"
-                  : wordCount > MAX_WORDS * 0.8
-                    ? "bg-yellow-500"
-                    : "bg-primary",
+                "text-sm whitespace-pre-wrap leading-relaxed",
+                outputText ? "text-foreground" : "text-muted-foreground",
               )}
-              style={{
-                width: `${Math.min((wordCount / MAX_WORDS) * 100, 100)}%`,
-              }}
-            />
+            >
+              {outputText || "Humanized text will appear here"}
+            </p>
           </div>
-        </div>
-      </CardContent>
 
-      {/* Divider */}
-      <div className="divider-gradient mx-4 sm:mx-5" />
-
-      {/* Controls */}
-      <CardFooter className="px-6 sm:px-8 py-5 flex-col gap-4 items-stretch">
-        {/* Intensity slider */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs select-none">
-            {INTENSITY_STEPS.map((s) => (
+          {/* Footer — 52px */}
+          <div className="flex items-center justify-between gap-2 px-4 border-t border-border">
+            <span className="text-xs text-muted-foreground">
+              {outputWordCount} / {MAX_WORDS} words
+            </span>
+            {outputText && (
               <button
-                key={s.value}
-                type="button"
-                onClick={() => setIntensity(s.value)}
-                className={cn(
-                  "font-medium transition-colors",
-                  intensity === s.value
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
+                onClick={handleCopyOutput}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                {s.label}
+                <Copy className="size-3" /> Copy
               </button>
-            ))}
+            )}
           </div>
-          <Slider
-            value={intensity}
-            onValueChange={(v) => setIntensity(v as number)}
-            min={0}
-            max={100}
-            step={50}
-            aria-label={`Humanization intensity: ${intensityLabel}`}
-          />
         </div>
-
-        {/* Action buttons */}
-        <div className="flex items-start sm:items-center justify-center gap-3">
-          <Button
-            variant="outline"
-            onClick={handleSubmit}
-            disabled={isOverLimit}
-          >
-            Check for AI
-          </Button>
-          <Button onClick={handleSubmit} disabled={isOverLimit}>
-            Humanize Now
-          </Button>
-        </div>
-
-        {error && (
-          <p role="alert" className="text-xs text-destructive -mt-2">
-            {error}
-          </p>
-        )}
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
