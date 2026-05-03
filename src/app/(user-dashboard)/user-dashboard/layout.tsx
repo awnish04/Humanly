@@ -37,7 +37,6 @@ const TOP_NAV = [
   { label: "Humanizer", href: "/", icon: Sparkles },
 ];
 
-// Only 2 items under Settings dropdown
 const SETTINGS_ITEMS = [
   { label: "Account", href: "/user-dashboard/settings/account", icon: User },
   {
@@ -66,13 +65,19 @@ export default function DashboardLayout({
   const isSettingsActive = pathname.startsWith("/user-dashboard/settings");
   const [settingsOpen, setSettingsOpen] = useState(isSettingsActive);
 
-  // Auto-collapse on small screens
+  // Close when navigating away from settings routes
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (!pathname.startsWith("/user-dashboard/settings")) {
+        setSettingsOpen(false);
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, [pathname]);
+
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
-    const check = () => {
-      if (window.innerWidth < 768) setCollapsed(true);
-      else setCollapsed(false);
-    };
+    const check = () => setCollapsed(window.innerWidth < 768);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -90,14 +95,13 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* ── Sidebar ── */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card transition-all duration-300",
           collapsed ? "w-14" : "w-52",
         )}
       >
-        {/* Logo + toggle */}
+        {/* Logo */}
         <div className="flex items-center justify-between px-3 py-4 border-b border-border min-h-[57px]">
           {!collapsed ? (
             <>
@@ -114,8 +118,8 @@ export default function DashboardLayout({
               </Link>
               <button
                 onClick={() => setCollapsed(true)}
-                className="ml-1 flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                 aria-label="Collapse"
+                className="ml-1 flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               >
                 <ChevronLeft className="size-3.5" />
               </button>
@@ -123,15 +127,15 @@ export default function DashboardLayout({
           ) : (
             <button
               onClick={() => setCollapsed(false)}
-              className="mx-auto flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground"
               aria-label="Expand"
+              className="mx-auto flex size-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground"
             >
               H
             </button>
           )}
         </div>
 
-        {/* Top nav */}
+        {/* Nav */}
         <nav className="flex flex-col gap-0.5 px-2 py-3 flex-1 overflow-y-auto">
           {TOP_NAV.map((item) => {
             const active = pathname === item.href;
@@ -154,7 +158,7 @@ export default function DashboardLayout({
             );
           })}
 
-          {/* Settings toggle */}
+          {/* Settings — inline accordion, drops below */}
           <button
             onClick={() => setSettingsOpen((v) => !v)}
             title={collapsed ? "Settings" : undefined}
@@ -173,16 +177,23 @@ export default function DashboardLayout({
                 <ChevronDown
                   className={cn(
                     "size-3.5 transition-transform duration-200",
-                    settingsOpen && "rotate-180",
+                    settingsOpen ? "rotate-180" : "rotate-0",
                   )}
                 />
               </>
             )}
           </button>
 
-          {/* Settings submenu */}
-          {settingsOpen && !collapsed && (
-            <div className="ml-3 flex flex-col gap-2 border-l border-border pl-2 py-2">
+          {/* Submenu — animates open/close below the button */}
+          <div
+            className={cn(
+              "overflow-hidden transition-all duration-200 ease-in-out",
+              settingsOpen && !collapsed
+                ? "max-h-40 opacity-100"
+                : "max-h-0 opacity-0 pointer-events-none",
+            )}
+          >
+            <div className="ml-3 flex flex-col gap-0.5 border-l border-border pl-2 py-1">
               {SETTINGS_ITEMS.map((item) => {
                 const active = pathname.startsWith(item.href);
                 return (
@@ -202,7 +213,7 @@ export default function DashboardLayout({
                 );
               })}
             </div>
-          )}
+          </div>
         </nav>
 
         {/* Bottom */}
@@ -263,7 +274,7 @@ export default function DashboardLayout({
             </button>
           )}
 
-          {/* User row → sign-out dialog */}
+          {/* User row */}
           <button
             onClick={() => setSignOutOpen(true)}
             className={cn(
@@ -295,7 +306,6 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      {/* Main content */}
       <div
         className={cn(
           "flex-1 min-h-screen transition-all duration-300",
@@ -305,7 +315,6 @@ export default function DashboardLayout({
         {children}
       </div>
 
-      {/* Sign-out dialog */}
       <Dialog open={signOutOpen} onOpenChange={setSignOutOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
