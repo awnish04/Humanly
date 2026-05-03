@@ -4,7 +4,13 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { LogOut, LayoutDashboard } from "lucide-react";
+import {
+  LogOut,
+  LayoutDashboard,
+  User,
+  CreditCard,
+  Settings,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function UserMenu() {
@@ -35,6 +41,8 @@ export function UserMenu() {
   const name =
     user?.fullName ?? user?.emailAddresses?.[0]?.emailAddress ?? "User";
   const email = user?.emailAddresses?.[0]?.emailAddress ?? "";
+
+  const close = () => setOpen(false);
 
   return (
     <div ref={ref} className="relative flex items-center justify-end">
@@ -69,15 +77,24 @@ export function UserMenu() {
             </div>
           </div>
 
-          {/* Dashboard link */}
+          {/* Nav links */}
           <div className="py-1">
             <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
+              href="/user-dashboard"
+              onClick={close}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
             >
               <LayoutDashboard className="size-4 text-muted-foreground" />
               Dashboard
+            </Link>
+            
+            <Link
+              href="/user-dashboard/settings/account"
+              onClick={close}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+            >
+              <Settings className="size-4 text-muted-foreground" />
+              Settings
             </Link>
           </div>
 

@@ -55,7 +55,11 @@ export default function LoginPage() {
       {/* Clerk's built-in SignIn — handles Google OAuth, email/password, everything */}
       <div className="relative z-10">
         <BlurFade delay={0.3} duration={0.5} inView>
-          <SignIn routing="hash" signUpUrl="/login" forceRedirectUrl="/" />
+          <SignIn
+            routing="hash"
+            signUpUrl="/login"
+            forceRedirectUrl="/user-dashboard"
+          />
         </BlurFade>
       </div>
     </main>

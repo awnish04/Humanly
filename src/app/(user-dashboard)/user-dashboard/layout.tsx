@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import {
-  Home,
   Sparkles,
   Zap,
   Settings,
@@ -14,10 +13,10 @@ import {
   Sun,
   Moon,
   ChevronLeft,
-  ChevronRight,
   ChevronDown,
   User,
-  LayoutGrid,
+  CreditCard,
+  LayoutDashboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -34,14 +33,18 @@ import {
 import { Button } from "@/components/ui/button";
 
 const TOP_NAV = [
-  { label: "Home", href: "/dashboard", icon: Home },
+  { label: "Dashboard", href: "/user-dashboard", icon: LayoutDashboard },
   { label: "Humanizer", href: "/", icon: Sparkles },
 ];
 
 // Only 2 items under Settings dropdown
 const SETTINGS_ITEMS = [
-  { label: "Account", href: "/account", icon: User },
-  { label: "App Settings", href: "/settings", icon: LayoutGrid },
+  { label: "Account", href: "/user-dashboard/settings/account", icon: User },
+  {
+    label: "Billing",
+    href: "/user-dashboard/settings/billing",
+    icon: CreditCard,
+  },
 ];
 
 const BOTTOM_NAV = [
@@ -60,14 +63,8 @@ export default function DashboardLayout({
   const { theme, setTheme } = useTheme();
   const [signOutOpen, setSignOutOpen] = useState(false);
 
-  const isSettingsActive =
-    pathname.startsWith("/account") || pathname.startsWith("/settings");
+  const isSettingsActive = pathname.startsWith("/user-dashboard/settings");
   const [settingsOpen, setSettingsOpen] = useState(isSettingsActive);
-
-  // Auto-open settings dropdown when on a settings route
-  useEffect(() => {
-    if (isSettingsActive) setSettingsOpen(true);
-  }, [isSettingsActive]);
 
   // Auto-collapse on small screens
   const [collapsed, setCollapsed] = useState(false);
@@ -105,7 +102,7 @@ export default function DashboardLayout({
           {!collapsed ? (
             <>
               <Link
-                href="/dashboard"
+                href="/user-dashboard"
                 className="flex items-center gap-2.5 min-w-0"
               >
                 <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
@@ -235,6 +232,7 @@ export default function DashboardLayout({
                 <button
                   key={t}
                   onClick={() => setTheme(t)}
+                  suppressHydrationWarning
                   className={cn(
                     "flex-1 flex items-center justify-center py-1 rounded-md transition-colors",
                     theme === t
@@ -252,6 +250,7 @@ export default function DashboardLayout({
             </div>
           ) : (
             <button
+              suppressHydrationWarning
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="flex items-center justify-center py-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
               title="Toggle theme"

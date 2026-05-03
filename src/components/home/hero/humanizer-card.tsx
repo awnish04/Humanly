@@ -37,8 +37,8 @@ const DETECTORS = [
   { name: "ZeroGPT", img: "/ZeroGPT.jpeg" },
 ];
 
-// ── AI score heuristic ────────────────────────────────────────────────────────
-function estimateAiScore(text: string) {
+// ── AI score heuristic (local fallback only) ──────────────────────────────────
+function estimateAiScoreLocal(text: string) {
   if (!text.trim()) return { ai: 0, assisted: 0, human: 100 };
   const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
   let score = 0;
@@ -494,7 +494,7 @@ export function HumanizerCard() {
     }
   };
 
-  const handleDetect = () => {
+  const handleDetect = async () => {
     const textToCheck = outputText || inputText;
     if (!textToCheck.trim()) {
       toast.error("Enter or humanize text first");
@@ -502,10 +502,24 @@ export function HumanizerCard() {
     }
     setDetecting(true);
     setAiScores(null);
-    setTimeout(() => {
-      setAiScores(estimateAiScore(textToCheck));
+    try {
+      const res = await fetch("/api/detect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: textToCheck }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error ?? "Detection failed");
+        return;
+      }
+      setAiScores(data as { ai: number; assisted: number; human: number });
+    } catch {
+      // Fallback to local heuristic if API is unreachable
+      setAiScores(estimateAiScoreLocal(textToCheck));
+    } finally {
       setDetecting(false);
-    }, 2000);
+    }
   };
 
   const handleHumanize = async () => {

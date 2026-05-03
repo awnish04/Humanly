@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import Link from "next/link";
 
 export default function AccountPage() {
   const { user } = useUser();
@@ -54,7 +53,7 @@ export default function AccountPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+      <div className="flex flex-col gap-6">
         {/* ── Profile Information ── */}
         <Card className="p-6 flex flex-col gap-5">
           <div>
@@ -153,60 +152,6 @@ export default function AccountPage() {
           <Button onClick={handleUpdatePassword} className="w-fit">
             Save
           </Button>
-        </Card>
-
-        {/* ── Plan & Usage ── */}
-        <Card className="p-6 flex flex-col gap-5">
-          <div>
-            <h2 className="text-base font-bold text-foreground">
-              Plan & Usage
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Overview of your current subscription and monthly usage.
-            </p>
-            <div className="h-px bg-border mt-3" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-border p-4 flex flex-col gap-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
-                Current Plan
-              </p>
-              <p className="text-xl font-black text-primary">Free</p>
-              <Link
-                href="/pricing"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
-              >
-                → Upgrade Plan
-              </Link>
-            </div>
-            <div className="rounded-xl border border-border p-4 flex flex-col gap-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
-                Words Remaining
-              </p>
-              <p className="text-xl font-black text-foreground">500</p>
-              <p className="text-xs text-muted-foreground">
-                0 / 500 used this month
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Usage</span>
-              <span>0%</span>
-            </div>
-            <div className="h-2 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full"
-                style={{ width: "0%" }}
-              />
-            </div>
-          </div>
-
-          <Link href="/pricing" className="w-fit">
-            <Button>Upgrade to Pro</Button>
-          </Link>
         </Card>
 
         {/* ── Danger Zone ── */}

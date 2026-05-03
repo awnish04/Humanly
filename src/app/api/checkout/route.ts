@@ -7,17 +7,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 const PRICE_MAP: Record<string, Record<string, string | undefined>> = {
-  starter: {
-    monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY,
-    yearly: process.env.STRIPE_PRICE_STARTER_YEARLY,
+  basic: {
+    monthly: process.env.STRIPE_PRICE_BASIC_MONTHLY,
+    yearly: process.env.STRIPE_PRICE_BASIC_YEARLY,
   },
   pro: {
     monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
     yearly: process.env.STRIPE_PRICE_PRO_YEARLY,
   },
-  business: {
-    monthly: process.env.STRIPE_PRICE_BUSINESS_MONTHLY,
-    yearly: process.env.STRIPE_PRICE_BUSINESS_YEARLY,
+  max: {
+    monthly: process.env.STRIPE_PRICE_MAX_MONTHLY,
+    yearly: process.env.STRIPE_PRICE_MAX_YEARLY,
   },
 };
 
@@ -51,13 +51,31 @@ export async function POST(req: NextRequest) {
   const origin = req.headers.get("origin") ?? "http://localhost:3000";
 
   try {
+    // Find or create a Stripe customer with userId in metadata
+    let customerId: string | undefined;
+    const existing = await stripe.customers.search({
+      query: `metadata["userId"]:"${userId}"`,
+      limit: 1,
+    });
+
+    if (existing.data.length > 0) {
+      customerId = existing.data[0].id;
+    } else {
+      const customer = await stripe.customers.create({
+        email: email ?? undefined,
+        metadata: { userId },
+      });
+      customerId = customer.id;
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
+      customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: email,
       metadata: { userId, planId, billing },
-      success_url: `${origin}/dashboard?checkout=success`,
+      subscription_data: { metadata: { userId, planId, billing } },
+      success_url: `${origin}/user-dashboard?checkout=success`,
       cancel_url: `${origin}/pricing?checkout=cancelled`,
     });
 
