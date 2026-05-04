@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Footer } from "./footer";
 
-const DASHBOARD_ROUTES = ["/user-dashboard"];
+const DASHBOARD_ROUTES = ["/user-dashboard", "/admin"];
 
 export function FooterWrapper() {
   const pathname = usePathname();

@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     plan?: string;
     wordsUsed?: number;
     usageResetAt?: string;
+    requests?: number;
   };
 
   const plan = meta.plan ?? "free";

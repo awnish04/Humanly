@@ -62,8 +62,12 @@ export async function GET() {
     const planId = product.metadata?.plan_id ?? "free";
     const billing = price.recurring?.interval === "year" ? "yearly" : "monthly";
     const wordsLimit = PLAN_WORDS[planId] ?? 500;
-    const renewsAt = sub.current_period_end
-      ? new Date(sub.current_period_end * 1000).toISOString()
+    // current_period_end moved to subscription item in newer Stripe API versions
+    const periodEnd =
+      (item as unknown as Record<string, unknown>).current_period_end ??
+      (sub as unknown as Record<string, unknown>).current_period_end;
+    const renewsAt = periodEnd
+      ? new Date((periodEnd as number) * 1000).toISOString()
       : null;
     const wordsUsed = parseInt(sub.metadata?.words_used ?? "0", 10);
 

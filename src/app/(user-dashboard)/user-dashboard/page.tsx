@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Star,
@@ -30,6 +30,14 @@ interface UsageData {
 }
 
 export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardPageInner />
+    </Suspense>
+  );
+}
+
+function DashboardPageInner() {
   const { user } = useUser();
   const name = user?.firstName ?? user?.fullName ?? "there";
   const [usage, setUsage] = useState<UsageData | null>(null);

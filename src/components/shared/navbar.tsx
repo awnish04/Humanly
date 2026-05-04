@@ -19,7 +19,7 @@ const NAV_LINKS = [
 ];
 
 // Routes that use the dashboard layout (no navbar/footer)
-const DASHBOARD_ROUTES = ["/user-dashboard"];
+const DASHBOARD_ROUTES = ["/user-dashboard", "/admin"];
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
