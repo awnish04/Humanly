@@ -42,7 +42,7 @@ export function ChartBarInteractive({ data }: Props) {
   return (
     <Card className="py-0">
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-2 sm:py-0!">
           <CardTitle>Signups vs Requests</CardTitle>
           <CardDescription>Daily activity — last 30 days</CardDescription>
         </div>
@@ -67,7 +67,7 @@ export function ChartBarInteractive({ data }: Props) {
       <CardContent className="px-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-[180px] w-full"
         >
           <BarChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />

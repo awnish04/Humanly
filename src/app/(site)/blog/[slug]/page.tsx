@@ -430,7 +430,7 @@ export default async function BlogPostPage({ params }: Props) {
               <img
                 src={post.image}
                 alt={post.title}
-                className="mb-8 aspect-video w-full rounded-2xl object-cover"
+                className="mb-8 aspect-video w-full rounded-xl object-cover"
               />
               {content}
             </article>

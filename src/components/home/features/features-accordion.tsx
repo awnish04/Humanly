@@ -65,7 +65,7 @@ export function FeaturesAccordion({
                 {feature.description}
               </motion.p>
               {/* Mobile visual */}
-              <div className="mt-5 md:hidden rounded-2xl border border-border bg-card overflow-hidden">
+              <div className="mt-5 md:hidden rounded-xl border border-border bg-card overflow-hidden">
                 {feature.visual}
               </div>
             </AccordionContent>

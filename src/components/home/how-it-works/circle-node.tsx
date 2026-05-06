@@ -14,7 +14,7 @@ export const Circle = forwardRef<
     <div
       ref={ref}
       className={cn(
-        "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center rounded-xl sm:rounded-2xl border ",
+        "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center rounded-xl sm:rounded-xl border ",
         className,
       )}
     >

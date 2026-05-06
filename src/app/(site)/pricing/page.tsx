@@ -8,6 +8,7 @@ import { PLANS } from "@/components/pricing/pricing-data";
 import { BillingToggle } from "@/components/pricing/billing-toggle";
 import { PlanCard } from "@/components/pricing/plan-card";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
+import { PricingCompare } from "@/components/pricing/pricing-compare";
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
@@ -78,6 +79,7 @@ export default function PricingPage() {
         </div>
       </section>
 
+      <PricingCompare />
       <PricingFaq />
     </>
   );

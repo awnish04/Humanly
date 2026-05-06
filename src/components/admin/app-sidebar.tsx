@@ -11,6 +11,8 @@ import {
   Settings,
   ArrowLeft,
   Zap,
+  CreditCard,
+  Percent,
 } from "lucide-react";
 import { NavMain } from "@/components/admin/nav-main";
 import { NavUser } from "@/components/admin/nav-user";
@@ -38,6 +40,8 @@ const NAV_USERS = [
 
 const NAV_REVENUE = [
   { title: "Revenue", url: "/admin/revenue", icon: DollarSign },
+  { title: "Pricing Plans", url: "/admin/pricing", icon: CreditCard },
+  { title: "Discounts", url: "/admin/discounts", icon: Percent },
   { title: "Coupons", url: "/admin/coupons", icon: Tag },
   { title: "Email Broadcast", url: "/admin/email", icon: Mail },
 ];

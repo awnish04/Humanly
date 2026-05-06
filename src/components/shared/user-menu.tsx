@@ -60,7 +60,7 @@ export function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-56 rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
+        <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-border bg-card shadow-xl overflow-hidden">
           {/* User info */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Avatar className="size-8">

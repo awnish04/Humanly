@@ -17,27 +17,26 @@ import {
 
 const chartConfig = {
   users: { label: "Users", color: "var(--chart-1)" },
-  capacity: { label: "Capacity (k)", color: "var(--chart-2)" },
+  wordsK: { label: "Words Used (k)", color: "var(--chart-2)" },
 } satisfies ChartConfig;
 
 interface Props {
   planCounts: { free: number; basic: number; pro: number; max: number };
+  wordsByPlan: { free: number; basic: number; pro: number; max: number };
 }
 
-const LIMITS = { free: 0.5, basic: 7, pro: 30, max: 100 };
-
-export function ChartRadarMultiple({ planCounts }: Props) {
+export function ChartRadarMultiple({ planCounts, wordsByPlan }: Props) {
   const data = (["free", "basic", "pro", "max"] as const).map((plan) => ({
     plan: plan.charAt(0).toUpperCase() + plan.slice(1),
     users: planCounts[plan],
-    capacity: LIMITS[plan],
+    wordsK: Math.round((wordsByPlan[plan] / 1000) * 10) / 10,
   }));
 
   return (
     <Card>
       <CardHeader className="items-center pb-4">
         <CardTitle>Plan Comparison</CardTitle>
-        <CardDescription>Users vs word capacity per plan</CardDescription>
+        <CardDescription>Users vs actual words used per plan</CardDescription>
       </CardHeader>
       <CardContent className="pb-0">
         <ChartContainer
@@ -56,7 +55,7 @@ export function ChartRadarMultiple({ planCounts }: Props) {
               fill="var(--color-users)"
               fillOpacity={0.6}
             />
-            <Radar dataKey="capacity" fill="var(--color-capacity)" />
+            <Radar dataKey="wordsK" fill="var(--color-wordsK)" />
           </RadarChart>
         </ChartContainer>
       </CardContent>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -12,7 +11,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { RefreshCw, Users, TrendingUp, Zap, FileText } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChartAreaStacked } from "@/components/admin/charts/chart-area-stacked";
 import { ChartBarMultiple } from "@/components/admin/charts/chart-bar-multiple";
@@ -24,6 +23,10 @@ import { ChartRadarMultiple } from "@/components/admin/charts/chart-radar-multip
 interface AnalyticsData {
   signupsByDay: { date: string; count: number }[];
   revenueByDay: { date: string; amount: number }[];
+  conversionsByDay: { date: string; count: number }[];
+  stackedByDay: { date: string; free: number; paid: number }[];
+  conversionByDay: { date: string; rate: number }[];
+  wordsByPlan: { free: number; basic: number; pro: number; max: number };
   planCounts: { free: number; basic: number; pro: number; max: number };
   totalUsers: number;
   paidUsers: number;
@@ -54,42 +57,20 @@ export default function AnalyticsPage() {
     void fetchData();
   }, []);
 
-  // Derived chart datasets
-  const totalPaid = data?.paidUsers ?? 0;
-  const totalFree = (data?.totalUsers ?? 0) - totalPaid;
-
-  // Stacked area: cumulative free vs paid per day (approximate from signups)
-  const stackedData = (data?.signupsByDay ?? []).map((d) => ({
-    date: d.date,
-    free: d.count,
-    paid: Math.round(
-      d.count * (totalPaid / Math.max(data?.totalUsers ?? 1, 1)),
-    ),
-  }));
-
-  // Bar multiple: signups vs paid conversions
-  const barMultipleData = (data?.signupsByDay ?? []).map((d) => ({
+  // All real data from API — no approximations
+  const stackedData = data?.stackedByDay ?? [];
+  const barMultipleData = (data?.signupsByDay ?? []).map((d, i) => ({
     date: d.date,
     signups: d.count,
-    paid: Math.round(
-      d.count * (totalPaid / Math.max(data?.totalUsers ?? 1, 1)),
-    ),
+    paid: data?.conversionsByDay?.[i]?.count ?? 0,
   }));
-
-  // Horizontal bar: words by plan
-  const LIMITS = { free: 500, basic: 7000, pro: 30000, max: 100000 };
   const horizontalData = (["free", "basic", "pro", "max"] as const).map(
     (plan) => ({
       plan,
-      words: (data?.planCounts[plan] ?? 0) * LIMITS[plan],
+      words: data?.wordsByPlan?.[plan] ?? 0,
     }),
   );
-
-  // Line chart: conversion rate over time (approximate)
-  const lineData = (data?.signupsByDay ?? []).map((d) => ({
-    date: d.date,
-    rate: parseFloat(data?.conversionRate ?? "0"),
-  }));
+  const lineData = data?.conversionByDay ?? [];
 
   return (
     <>
@@ -130,68 +111,19 @@ export default function AnalyticsPage() {
           </p>
         </div>
 
-        {/* KPI row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            {
-              label: "Total Users",
-              value: data?.totalUsers ?? 0,
-              icon: Users,
-              color: "bg-sky-400/10 text-sky-400",
-            },
-            {
-              label: "Conversion Rate",
-              value: `${data?.conversionRate ?? "0.0"}%`,
-              icon: TrendingUp,
-              color: "bg-primary/10 text-primary",
-            },
-            {
-              label: "Words Processed",
-              value: (data?.totalWordsProcessed ?? 0).toLocaleString(),
-              icon: FileText,
-              color: "bg-yellow-400/10 text-yellow-400",
-            },
-            {
-              label: "Avg Words / User",
-              value: (data?.avgWordsPerUser ?? 0).toLocaleString(),
-              icon: Zap,
-              color: "bg-violet-400/10 text-violet-400",
-            },
-          ].map((card) => (
-            <Card key={card.label} className="p-5 flex flex-col gap-3">
-              <span
-                className={cn(
-                  "flex size-9 items-center justify-center rounded-xl",
-                  card.color,
-                )}
-              >
-                <card.icon className="size-4" />
-              </span>
-              <div>
-                <p className="text-2xl font-black text-foreground">
-                  {card.value}
-                </p>
-                <p className="text-xs mt-0.5 text-muted-foreground">
-                  {card.label}
-                </p>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Full-width charts */}
+        <div className="flex flex-col gap-6 mb-6">
           <ChartAreaStacked data={stackedData} />
           <ChartBarMultiple data={barMultipleData} />
         </div>
 
-        {/* Row 2 */}
+        {/* Row 2 — half width */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <ChartBarHorizontal data={horizontalData} />
           <ChartLine data={lineData} />
         </div>
 
-        {/* Row 3 */}
+        {/* Row 3 — half width */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ChartPieInteractive
             planCounts={
@@ -201,6 +133,9 @@ export default function AnalyticsPage() {
           <ChartRadarMultiple
             planCounts={
               data?.planCounts ?? { free: 0, basic: 0, pro: 0, max: 0 }
+            }
+            wordsByPlan={
+              data?.wordsByPlan ?? { free: 0, basic: 0, pro: 0, max: 0 }
             }
           />
         </div>

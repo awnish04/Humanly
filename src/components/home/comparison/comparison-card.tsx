@@ -18,7 +18,7 @@ export function ComparisonCard({
   return (
     <div
       className={cn(
-        "absolute inset-0 flex flex-col p-6 sm:p-10 rounded-2xl overflow-hidden",
+        "absolute inset-0 flex flex-col p-6 sm:p-10 rounded-xl overflow-hidden",
         variant === "before" ? "bg-destructive/10" : "bg-primary/10",
       )}
     >

@@ -11,7 +11,7 @@ export function TextPanel({ title, content, label, variant }: TextPanelProps) {
   return (
     <div
       className={cn(
-        "absolute inset-0 flex flex-col p-8 rounded-2xl",
+        "absolute inset-0 flex flex-col p-8 rounded-xl",
         variant === "before"
           ? "bg-destructive/10 border border-destructive/20"
           : "bg-primary/10 border border-primary/20",

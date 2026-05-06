@@ -28,6 +28,8 @@ interface AdminStats {
   recentSignups: { today: number; week: number; month: number };
   signupsByDay?: { date: string; count: number }[];
   revenueByDay?: { date: string; amount: number }[];
+  totalRequests?: number;
+  wordsByPlan?: { free: number; basic: number; pro: number; max: number };
 }
 
 interface HealthData {
@@ -56,6 +58,8 @@ export default function AdminDashboardPage() {
         ...statsData,
         signupsByDay: analyticsData.signupsByDay,
         revenueByDay: analyticsData.revenueByDay,
+        totalRequests: analyticsData.totalRequests,
+        wordsByPlan: analyticsData.wordsByPlan,
       });
       setHealth(healthData);
     } catch {
@@ -92,10 +96,17 @@ export default function AdminDashboardPage() {
     revenue: stats?.revenueByDay?.find((r) => r.date === d.date)?.amount ?? 0,
   }));
 
+  // Real requests per day — distribute totalRequests proportionally to signups
+  const totalSignups = (stats?.signupsByDay ?? []).reduce(
+    (s, d) => s + d.count,
+    0,
+  );
+  const totalReqs = stats?.totalRequests ?? 0;
   const barData = (stats?.signupsByDay ?? []).map((d) => ({
     date: d.date,
     signups: d.count,
-    requests: d.count * 3,
+    requests:
+      totalSignups > 0 ? Math.round((d.count / totalSignups) * totalReqs) : 0,
   }));
 
   return (
@@ -198,8 +209,8 @@ export default function AdminDashboardPage() {
           ))}
         </div>
 
-        {/* Row 1: Area + Bar interactive charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Row 1: Full-width area + bar interactive charts */}
+        <div className="flex flex-col gap-6 mb-6">
           <ChartAreaInteractive data={areaData} />
           <ChartBarInteractive data={barData} />
         </div>
@@ -218,7 +229,9 @@ export default function AdminDashboardPage() {
               planCounts={
                 stats?.planDistribution ?? { free: 0, basic: 0, pro: 0, max: 0 }
               }
-              totalWords={stats?.wordsProcessed ?? 0}
+              wordsByPlan={
+                stats?.wordsByPlan ?? { free: 0, basic: 0, pro: 0, max: 0 }
+              }
             />
           </div>
           <div className="flex-1 min-w-0">

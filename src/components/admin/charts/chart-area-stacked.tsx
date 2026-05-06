@@ -33,7 +33,7 @@ export function ChartAreaStacked({ data }: Props) {
         <CardDescription>Free vs paid users over last 30 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="h-[180px] w-full">
           <AreaChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis

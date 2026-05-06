@@ -8,12 +8,12 @@ export const HumanlyNode = forwardRef<HTMLDivElement, { className?: string }>(
       <div
         ref={ref}
         className={cn(
-          "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center rounded-xl sm:rounded-2xl border  border-primary bg-primary/10 shadow-lg shadow-primary/20",
+          "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center rounded-xl sm:rounded-xl border  border-primary bg-primary/10 shadow-lg shadow-primary/20",
           className,
         )}
       >
         {/* "z-10 flex size-9 sm:size-12 md:size-14 items-center justify-center
-        rounded-xl sm:rounded-2xl border border-border bg-card shadow-sm", */}
+        rounded-xl sm:rounded-xl border border-border bg-card shadow-sm", */}
         <Sparkles className="size-6 sm:size-7 md:size-8 text-primary" />
       </div>
       <div className="flex flex-col items-center gap-0.5">

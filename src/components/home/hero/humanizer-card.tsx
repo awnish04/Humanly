@@ -299,7 +299,7 @@ function AiDetectionPanel({
   }, []);
 
   return (
-    <div className="w-full rounded-2xl border border-border bg-card shadow-lg overflow-hidden mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="w-full rounded-xl border border-border bg-card shadow-lg overflow-hidden mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
       <div className="flex items-center justify-between px-5 py-2.5 border-b border-border">
         <div className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-primary animate-pulse" />
@@ -563,7 +563,7 @@ export function HumanizerCard() {
   return (
     <div className="w-full flex flex-col">
       {/* ── Main card ── */}
-      <div className="w-full rounded-2xl border border-border bg-card shadow-2xl overflow-hidden">
+      <div className="w-full rounded-xl border border-border bg-card shadow-2xl overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-border">
           {/* LEFT: Input */}
           <div className="grid grid-rows-[1fr_52px]">
@@ -749,7 +749,7 @@ export function HumanizerCard() {
       </div>
 
       {detecting && (
-        <div className="w-full rounded-2xl border border-border bg-card shadow-lg mt-3 p-5 flex items-center gap-4 animate-in fade-in duration-200">
+        <div className="w-full rounded-xl border border-border bg-card shadow-lg mt-3 p-5 flex items-center gap-4 animate-in fade-in duration-200">
           <span className="size-5 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
           <div>
             <p className="text-sm font-semibold text-foreground">

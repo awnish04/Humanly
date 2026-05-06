@@ -25,24 +25,21 @@ const chartConfig = {
 
 interface Props {
   planCounts: { free: number; basic: number; pro: number; max: number };
-  totalWords: number;
+  wordsByPlan: { free: number; basic: number; pro: number; max: number };
 }
 
-export function ChartRadial({ planCounts, totalWords }: Props) {
-  // Words capacity per plan
-  const LIMITS = { free: 500, basic: 7000, pro: 30000, max: 100000 };
-
+export function ChartRadial({ planCounts, wordsByPlan }: Props) {
   const chartData = (["max", "pro", "basic", "free"] as const).map((plan) => ({
     plan,
-    words: planCounts[plan] * LIMITS[plan],
+    words: wordsByPlan[plan],
     fill: `var(--color-${plan})`,
   }));
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Word Capacity</CardTitle>
-        <CardDescription>Total capacity by plan tier</CardDescription>
+        <CardTitle>Word Usage by Plan</CardTitle>
+        <CardDescription>Actual words processed per plan tier</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer

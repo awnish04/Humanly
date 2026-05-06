@@ -47,18 +47,23 @@ export async function GET() {
       (t) => t >= startOfMonth.getTime(),
     ).length;
 
-    // Monthly revenue from Stripe
+    // Monthly revenue — only from Humanly subscriptions via invoice payments
     let monthlyRevenue = 0;
     try {
-      const charges = await stripe.charges.list({
+      const invoices = await stripe.invoices.list({
         limit: 100,
         created: { gte: Math.floor(startOfMonth.getTime() / 1000) },
+        status: "paid",
       });
-      monthlyRevenue = charges.data
-        .filter((c) => c.paid && !c.refunded)
-        .reduce((sum, c) => sum + c.amount, 0);
+      // Only count invoices tied to a subscription (Humanly recurring payments)
+      monthlyRevenue = invoices.data
+        .filter(
+          (inv) =>
+            (inv as unknown as Record<string, unknown>)["subscription"] != null,
+        )
+        .reduce((sum, inv) => sum + (inv.amount_paid ?? 0), 0);
     } catch {
-      // Stripe may not have charges yet
+      // Stripe may not have invoices yet
     }
 
     return NextResponse.json({

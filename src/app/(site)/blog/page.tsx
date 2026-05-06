@@ -72,7 +72,7 @@ export default function BlogPage() {
           <BlurFade delay={0.1} duration={0.5} inView>
             <a
               href={featured.url}
-              className="group grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden rounded-2xl border border-border bg-card hover:border-primary/30 transition-colors"
+              className="group grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden rounded-xl border border-border bg-card hover:border-primary/30 transition-colors"
             >
               <div className="aspect-video md:aspect-auto overflow-hidden">
                 <img

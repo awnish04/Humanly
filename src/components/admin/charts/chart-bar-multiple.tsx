@@ -32,7 +32,7 @@ export function ChartBarMultiple({ data }: Props) {
         <CardDescription>New users vs paid conversions per day</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="h-[180px] w-full">
           <BarChart data={data} margin={{ left: 0, right: 0 }}>
             <CartesianGrid vertical={false} />
             <XAxis
