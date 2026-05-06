@@ -83,16 +83,25 @@ export const TOGGLE_DISCOUNT_MUTATION = `
   }
 `;
 
-// Simple fetch-based GraphQL client (no Apollo needed on server)
+// Simple fetch-based GraphQL client
 export async function gql<T = unknown>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
   const res = await fetch("/api/graphql", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ query, variables }),
   });
+
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    const text = await res.text();
+    throw new Error(
+      `GraphQL endpoint returned non-JSON (${res.status}): ${text.slice(0, 200)}`,
+    );
+  }
+
   const json = await res.json();
   if (json.errors?.length) throw new Error(json.errors[0].message);
   return json.data as T;

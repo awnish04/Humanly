@@ -1,18 +1,25 @@
 import { createSchema, createYoga } from "graphql-yoga";
 import { typeDefs } from "@/lib/graphql/schema";
 import { resolvers } from "@/lib/graphql/resolvers";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const yoga = createYoga({
   schema: createSchema({ typeDefs, resolvers }),
   graphqlEndpoint: "/api/graphql",
-  fetchAPI: { Response },
 });
 
 export async function GET(request: NextRequest) {
-  return yoga.fetch(request as unknown as Request);
+  const response = await yoga.handleRequest(request, {});
+  return new NextResponse(response.body, {
+    status: response.status,
+    headers: response.headers,
+  });
 }
 
 export async function POST(request: NextRequest) {
-  return yoga.fetch(request as unknown as Request);
+  const response = await yoga.handleRequest(request, {});
+  return new NextResponse(response.body, {
+    status: response.status,
+    headers: response.headers,
+  });
 }

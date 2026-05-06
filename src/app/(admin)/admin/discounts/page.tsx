@@ -153,11 +153,22 @@ export default function AdminDiscountsPage() {
   };
 
   const handleToggle = async (d: Discount) => {
+    // Optimistic update — flip immediately in UI
+    setDiscounts((prev) =>
+      prev.map((item) =>
+        item.id === d.id ? { ...item, enabled: !item.enabled } : item,
+      ),
+    );
     try {
       await gql(TOGGLE_DISCOUNT_MUTATION, { id: d.id, enabled: !d.enabled });
-      toast.success(d.enabled ? "Discount disabled" : "Discount enabled");
-      fetchDiscounts();
+      toast.success(!d.enabled ? "Discount enabled" : "Discount disabled");
     } catch {
+      // Revert on failure
+      setDiscounts((prev) =>
+        prev.map((item) =>
+          item.id === d.id ? { ...item, enabled: d.enabled } : item,
+        ),
+      );
       toast.error("Toggle failed");
     }
   };
@@ -204,9 +215,9 @@ export default function AdminDiscountsPage() {
                 <TableHead>Code</TableHead>
                 <TableHead>Discount</TableHead>
                 <TableHead>Title</TableHead>
-                <TableHead>Timer</TableHead>
+                <TableHead>Expires</TableHead>
                 <TableHead>Delay</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Active</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -256,7 +267,15 @@ export default function AdminDiscountsPage() {
                       </p>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {d.showTimer ? `${d.timerMinutes}m` : "Off"}
+                      {d.expiresAt
+                        ? new Date(d.expiresAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "No expiry"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {d.delaySeconds}s
@@ -395,21 +414,6 @@ export default function AdminDiscountsPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="d-timer">Timer (minutes)</Label>
-              <Input
-                id="d-timer"
-                type="number"
-                min={1}
-                value={form.timerMinutes}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    timerMinutes: parseInt(e.target.value) || 15,
-                  }))
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
               <Label htmlFor="d-delay">Delay (seconds)</Label>
               <Input
                 id="d-delay"
@@ -424,8 +428,13 @@ export default function AdminDiscountsPage() {
                 }
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="d-expires">Expires At (optional)</Label>
+            <div className="col-span-2 flex flex-col gap-1.5">
+              <Label htmlFor="d-expires">
+                Expires At
+                <span className="ml-1.5 text-xs text-muted-foreground font-normal">
+                  — sets the countdown timer automatically
+                </span>
+              </Label>
               <Input
                 id="d-expires"
                 type="datetime-local"
@@ -434,9 +443,16 @@ export default function AdminDiscountsPage() {
                   setForm((f) => ({
                     ...f,
                     expiresAt: e.target.value || undefined,
+                    // Auto-enable timer when expiry date is set
+                    showTimer: !!e.target.value,
                   }))
                 }
               />
+              {form.expiresAt && (
+                <p className="text-xs text-primary">
+                  ✓ Countdown timer will show automatically
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-3 pt-1">
               <div className="flex items-center gap-2">
@@ -450,18 +466,6 @@ export default function AdminDiscountsPage() {
                   className="size-4 rounded"
                 />
                 <Label htmlFor="d-enabled">Enabled (show popup)</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="d-show-timer"
-                  checked={form.showTimer}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, showTimer: e.target.checked }))
-                  }
-                  className="size-4 rounded"
-                />
-                <Label htmlFor="d-show-timer">Show countdown timer</Label>
               </div>
             </div>
           </div>

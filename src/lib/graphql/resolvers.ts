@@ -1,9 +1,11 @@
 import {
-  plansStore,
-  discountsStore,
-  StoredPlan,
-  StoredDiscount,
-} from "./store";
+  getPlans,
+  savePlans,
+  getDiscounts,
+  saveDiscounts,
+  type StoredPlan,
+  type StoredDiscount,
+} from "./db";
 
 function now() {
   return new Date().toISOString();
@@ -11,29 +13,24 @@ function now() {
 
 export const resolvers = {
   Query: {
-    plans: () => plansStore,
+    plans: () => getPlans(),
     plan: (_: unknown, { id }: { id: string }) =>
-      plansStore.find((p) => p.id === id) ?? null,
-
-    discounts: () => discountsStore,
+      getPlans().find((p) => p.id === id) ?? null,
+    discounts: () => getDiscounts(),
     discount: (_: unknown, { id }: { id: string }) =>
-      discountsStore.find((d) => d.id === id) ?? null,
-    activeDiscount: () => discountsStore.find((d) => d.enabled) ?? null,
+      getDiscounts().find((d) => d.id === id) ?? null,
+    activeDiscount: () => getDiscounts().find((d) => d.enabled) ?? null,
   },
 
   Mutation: {
-    // ── Plans ──────────────────────────────────────────────────────────────────
     createPlan: (
       _: unknown,
       { input }: { input: Omit<StoredPlan, "createdAt" | "updatedAt"> },
     ) => {
-      const plan: StoredPlan = {
-        ...input,
-        usageCount: 0,
-        createdAt: now(),
-        updatedAt: now(),
-      } as StoredPlan;
-      plansStore.push(plan);
+      const plans = getPlans();
+      const plan: StoredPlan = { ...input, createdAt: now(), updatedAt: now() };
+      plans.push(plan);
+      savePlans(plans);
       return plan;
     },
 
@@ -41,20 +38,23 @@ export const resolvers = {
       _: unknown,
       { id, input }: { id: string; input: Partial<StoredPlan> },
     ) => {
-      const idx = plansStore.findIndex((p) => p.id === id);
+      const plans = getPlans();
+      const idx = plans.findIndex((p) => p.id === id);
       if (idx === -1) throw new Error(`Plan ${id} not found`);
-      plansStore[idx] = { ...plansStore[idx], ...input, updatedAt: now() };
-      return plansStore[idx];
+      plans[idx] = { ...plans[idx], ...input, updatedAt: now() };
+      savePlans(plans);
+      return plans[idx];
     },
 
     deletePlan: (_: unknown, { id }: { id: string }) => {
-      const idx = plansStore.findIndex((p) => p.id === id);
+      const plans = getPlans();
+      const idx = plans.findIndex((p) => p.id === id);
       if (idx === -1) return false;
-      plansStore.splice(idx, 1);
+      plans.splice(idx, 1);
+      savePlans(plans);
       return true;
     },
 
-    // ── Discounts ──────────────────────────────────────────────────────────────
     createDiscount: (
       _: unknown,
       {
@@ -66,6 +66,7 @@ export const resolvers = {
         >;
       },
     ) => {
+      const discounts = getDiscounts();
       const discount: StoredDiscount = {
         ...input,
         id: crypto.randomUUID(),
@@ -73,7 +74,8 @@ export const resolvers = {
         createdAt: now(),
         updatedAt: now(),
       };
-      discountsStore.push(discount);
+      discounts.push(discount);
+      saveDiscounts(discounts);
       return discount;
     },
 
@@ -81,20 +83,20 @@ export const resolvers = {
       _: unknown,
       { id, input }: { id: string; input: Partial<StoredDiscount> },
     ) => {
-      const idx = discountsStore.findIndex((d) => d.id === id);
+      const discounts = getDiscounts();
+      const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) throw new Error(`Discount ${id} not found`);
-      discountsStore[idx] = {
-        ...discountsStore[idx],
-        ...input,
-        updatedAt: now(),
-      };
-      return discountsStore[idx];
+      discounts[idx] = { ...discounts[idx], ...input, updatedAt: now() };
+      saveDiscounts(discounts);
+      return discounts[idx];
     },
 
     deleteDiscount: (_: unknown, { id }: { id: string }) => {
-      const idx = discountsStore.findIndex((d) => d.id === id);
+      const discounts = getDiscounts();
+      const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) return false;
-      discountsStore.splice(idx, 1);
+      discounts.splice(idx, 1);
+      saveDiscounts(discounts);
       return true;
     },
 
@@ -102,14 +104,12 @@ export const resolvers = {
       _: unknown,
       { id, enabled }: { id: string; enabled: boolean },
     ) => {
-      const idx = discountsStore.findIndex((d) => d.id === id);
+      const discounts = getDiscounts();
+      const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) throw new Error(`Discount ${id} not found`);
-      discountsStore[idx] = {
-        ...discountsStore[idx],
-        enabled,
-        updatedAt: now(),
-      };
-      return discountsStore[idx];
+      discounts[idx] = { ...discounts[idx], enabled, updatedAt: now() };
+      saveDiscounts(discounts);
+      return discounts[idx];
     },
   },
 };
