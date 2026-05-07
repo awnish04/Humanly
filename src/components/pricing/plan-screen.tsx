@@ -5,7 +5,6 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { NumberTicker } from "@/components/ui/number-ticker";
 import { Separator } from "@/components/ui/separator";
 import type { Plan } from "./pricing-data";
 import { useState } from "react";
@@ -68,9 +67,9 @@ export function PlanScreen({ plan, billing }: PlanScreenProps) {
       {/* Price */}
       <div className="flex items-end gap-0.5 leading-none shrink-0">
         <h3 className={cn("self-start mt-1", plan.accentColor)}>$</h3>
-        <h2 className={cn("tabular-nums leading-none", plan.accentColor)}>
-          <NumberTicker value={price} decimalPlaces={2} />
-        </h2>
+        <h3 className={cn("tabular-nums leading-none text-4xl", plan.accentColor)}>
+          {price.toFixed(2)}
+        </h3>
         <p className="mb-1">/month</p>
       </div>
 
