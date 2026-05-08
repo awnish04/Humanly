@@ -125,9 +125,9 @@ export function DiscountPopup() {
     return null;
 
   const n = discounts.length;
-  const CARD_H = 268;
-  const CARD_GAP = 12;
-  const PEEK = 8;
+  const CARD_H = 280; // actual rendered card height
+  const CARD_GAP = 15; // gap between cards when expanded
+  const PEEK = 10; // how much each stacked card peeks below
 
   // Collapsed height: top card + peeking cards
   const collapsedH = CARD_H + (n > 1 ? (n - 1) * PEEK : 0);
@@ -137,7 +137,7 @@ export function DiscountPopup() {
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-6 z-9999 w-64 flex flex-col gap-3 transition-all duration-500 ease-out",
+        "fixed bottom-6 left-6 z-30 w-64 flex flex-col gap-3 transition-all duration-500 ease-out",
         visible
           ? "translate-y-0 opacity-100"
           : "translate-y-8 opacity-0 pointer-events-none",
@@ -154,7 +154,7 @@ export function DiscountPopup() {
           // Collapsed: exact height of stacked cards
           // Expanded: cap at 70vh so it never goes off screen, scroll if needed
           height: expanded
-            ? `min(${fullExpandedH}px, 70vh)`
+            ? `min(${fullExpandedH}px, 50vh)`
             : `${collapsedH}px`,
         }}
       >
@@ -190,7 +190,7 @@ export function DiscountPopup() {
                   pointerEvents: !expanded && !isTop ? "none" : "auto",
                 }}
               >
-                <Card className="relative border-primary/30 gap-0 py-0 shadow-2xl">
+                <Card className="relative gap-0 py-0">
                   <Sparkles className="absolute top-3 left-3 size-3.5 text-primary animate-pulse" />
 
                   {isTop && (

@@ -89,16 +89,12 @@ export default function AdminDiscountsPage() {
   const [editing, setEditing] = useState<Discount | null>(null);
   const [form, setForm] = useState(EMPTY);
 
-  const fetchDiscounts = useCallback(async () => {
+  const fetchDiscounts = useCallback(() => {
     setLoading(true);
-    try {
-      const data = await gql<{ discounts: Discount[] }>(DISCOUNTS_QUERY);
-      setDiscounts(data.discounts);
-    } catch {
-      toast.error("Failed to load discounts");
-    } finally {
-      setLoading(false);
-    }
+    gql<{ discounts: Discount[] }>(DISCOUNTS_QUERY)
+      .then((data) => setDiscounts(data.discounts))
+      .catch(() => toast.error("Failed to load discounts"))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
