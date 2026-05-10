@@ -24,10 +24,10 @@ export function FeaturesSection() {
             >
               ✦ Why Humanly
             </Badge>
-            <h2 className="text-balance max-w-xl">
+            <h2>
               Everything you need to write freely
             </h2>
-            <p className="text-muted-foreground max-w-lg text-base">
+            <p className="text-muted-foreground text-base">
               From academic papers to SEO content Humanly handles every use case
               with precision and speed.
             </p>

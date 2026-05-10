@@ -8,7 +8,6 @@ import { Marquee } from "@/components/ui/marquee";
 import { Testimonial, TESTIMONIALS } from "./testimonials-data";
 import { Card } from "@/components/ui/card";
 
-
 const col1 = TESTIMONIALS.slice(0, 4);
 const col2 = TESTIMONIALS.slice(4, 8);
 const col3 = TESTIMONIALS.slice(8, 12);
@@ -64,20 +63,17 @@ export function TestimonialsSection() {
     >
       <div className="container-page">
         <BlurFade delay={0} duration={0.5} inView>
-          <div className="mb-12 flex flex-col gap-3 items-center text-center">
+          <div className="mb-12 flex flex-col gap-1 items-center text-center">
             <Badge
               variant="outline"
               className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"
             >
               ✦ Testimonials
             </Badge>
-            <h2
-              id="testimonials-heading"
-              className="text-balance max-w-2xl mx-auto"
-            >
+            <h2 id="testimonials-heading">
               Trusted by writers, students, and marketers
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto text-base">
+            <p >
               Thousands of people use Humanly every day to bypass AI detectors
               and publish with confidence.
             </p>

@@ -13,7 +13,7 @@ export function ComparisonSection() {
     <section aria-label="Before After Comparison" className="section relative">
       <ContainerScroll
         titleComponent={
-          <div className="flex flex-col gap-3 items-center text-center">
+          <div className="flex flex-col gap-1 items-center text-center">
             <BlurFade delay={0} duration={0.5} inView>
               <Badge
                 variant="outline"
@@ -24,7 +24,7 @@ export function ComparisonSection() {
             </BlurFade>
 
             <BlurFade delay={0.1} duration={0.5} inView>
-              <h2 className="text-balance max-w-2xl mx-auto">
+              <h2>
                 From robotic to natural in seconds
               </h2>
             </BlurFade>

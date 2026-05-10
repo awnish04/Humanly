@@ -15,7 +15,7 @@ export function DetectorsSection() {
       <div className="container-page">
         {/* Header */}
         <BlurFade delay={0} duration={0.5} inView>
-          <div className="mb-12 flex flex-col gap-3 items-center text-center">
+          <div className="mb-12 flex flex-col gap-1 items-center text-center">
             <Badge
               variant="outline"
               className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"

@@ -52,13 +52,13 @@ export default function ContactPage() {
           </BlurFade>
 
           <BlurFade delay={0.1} duration={0.5} inView>
-            <h1 className="text-balance max-w-3xl">
+            <h1>
               We&apos;d love to <AuroraText>hear from you</AuroraText>
             </h1>
           </BlurFade>
 
           <BlurFade delay={0.2} duration={0.5} inView>
-            <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground mx-auto">
               Have a question, feedback, or need help? Fill out the form and our
               team will get back to you within 1 business day.
             </p>

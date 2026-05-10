@@ -142,20 +142,20 @@ export function PricingCompare() {
     <section className="section">
       <div className="container-page">
         <BlurFade delay={0} duration={0.5} inView>
-          <div className="flex flex-col gap-3 items-center text-center mb-12">
+          <div className="flex flex-col gap-1 items-center text-center mb-12">
             <Badge
               variant="outline"
               className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"
             >
               ✦ Comparison
             </Badge>
-            <h2 className="text-balance max-w-2xl mx-auto">
+            <h2 className=" max-w-4xl">
               Why choose Humanly over other rewriting tools?
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
-              Traditional AI rewriters rely on basic prompt engineering —
-              advanced detectors catch them every time. Humanly uses a specially
-              trained model that learns from thousands of human-written texts.
+            <p className="text-muted-foreground max-w-3xl mx-auto text-base">
+              Traditional AI rewriters rely on basic prompt engineering advanced
+              detectors catch them every time. Humanly uses a specially trained
+              model that learns from thousands of human-written texts.
             </p>
           </div>
         </BlurFade>

@@ -13,10 +13,10 @@ export function StatsSection() {
             <span className="inline-flex w-fit items-center rounded-full border border-primary/30 px-3 py-1 text-xs font-medium text-primary">
               ✦ By the numbers
             </span>
-            <h2 className="text-balance max-w-xl">
+            <h2>
               Trusted by writers worldwide
             </h2>
-            <p className="max-w-lg text-base">
+            <p className=" text-base">
               Real numbers from real users — no marketing fluff.
             </p>
           </div>

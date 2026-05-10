@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -88,6 +88,7 @@ export default function AdminDiscountsPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editing, setEditing] = useState<Discount | null>(null);
   const [form, setForm] = useState(EMPTY);
+  const [, startTransition] = useTransition();
 
   const fetchDiscounts = useCallback(() => {
     setLoading(true);
@@ -98,7 +99,7 @@ export default function AdminDiscountsPage() {
   }, []);
 
   useEffect(() => {
-    fetchDiscounts();
+    startTransition(() => fetchDiscounts());
   }, [fetchDiscounts]);
 
   const openCreate = () => {
@@ -120,8 +121,14 @@ export default function AdminDiscountsPage() {
     setSaving(true);
     try {
       if (editing) {
-        const { id, usageCount, createdAt, updatedAt, ...input } =
-          form as Discount;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {
+          id: _id,
+          usageCount: _u,
+          createdAt: _c,
+          updatedAt: _up,
+          ...input
+        } = form as Discount;
         await gql(UPDATE_DISCOUNT_MUTATION, { id: editing.id, input });
         toast.success("Discount updated");
       } else {

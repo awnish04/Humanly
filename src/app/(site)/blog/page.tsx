@@ -54,13 +54,13 @@ export default function BlogPage() {
           </BlurFade>
 
           <BlurFade delay={0.1} duration={0.5} inView>
-            <h1 className="text-balance max-w-3xl">
+            <h1>
               Insights on AI writing & <AuroraText>detection</AuroraText>
             </h1>
           </BlurFade>
 
           <BlurFade delay={0.2} duration={0.5} inView>
-            <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground mx-auto">
               Guides, research, and strategies for writers, students, and
               marketers navigating the AI content landscape.
             </p>

@@ -193,7 +193,7 @@ export function AnimatedDiagram() {
       </div>
 
       {/* Bottom step cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 p-4 sm:p-6 border-t border-border bg-muted/30">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-6 px-4 sm:pt-6 border-t border-border">
         {[
           {
             step: "01",

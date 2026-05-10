@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@clerk/nextjs";
@@ -11,6 +11,7 @@ import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./user-menu";
 import { AuthToast } from "./auth-toast";
+import { ArrowRightIcon } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -77,7 +78,7 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
-
+  const [, startTransition] = useTransition();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     onScroll();
@@ -93,9 +94,9 @@ export function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Close on route change
+  // Close menu on route change
   useEffect(() => {
-    setMenuOpen(false);
+    startTransition(() => setMenuOpen(false));
   }, [pathname]);
 
   // Lock body scroll when open
@@ -203,14 +204,20 @@ export function Navbar() {
             ) : (
               <>
                 <div className="hidden md:flex items-center gap-2">
-                  <Link
-                    href="/login"
-                    className="px-3 py-1.5 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-muted"
-                  >
-                    Log in
-                  </Link>
                   <Link href="/login">
-                    <Button>Try for free</Button>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+
+                  <Link href="/login">
+                    <Button size="lg" className="w-full sm:w-auto gap-2">
+                      Try for free
+                    </Button>
                   </Link>
                 </div>
                 <MenuToggle
@@ -242,7 +249,7 @@ export function Navbar() {
 
             {/* Slide-in panel */}
             <motion.div
-              className="relative z-10 flex flex-col h-full pt-[var(--navbar-height)]"
+              className="relative z-10 flex flex-col h-full pt-(--navbar-height)"
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}

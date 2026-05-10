@@ -35,7 +35,7 @@ export function HeroSection() {
 
       <ContainerScroll
         titleComponent={
-          <div className="flex flex-col items-center text-center gap-6">
+          <div className="flex flex-col items-center text-center gap-3">
             {/* Eyebrow badge */}
             <BlurFade delay={0} duration={0.4}>
               <HeroEyebrow />
@@ -43,7 +43,7 @@ export function HeroSection() {
 
             {/* Headline */}
             <BlurFade delay={0.1} duration={0.5}>
-              <h1 className="max-w-2xl ">
+              <h1 className="max-w-3xl ">
                 <AuroraText>Humanly -</AuroraText> Nobody Will Know It’s{" "}
                 <AuroraText>AI Anymore</AuroraText>
               </h1>
@@ -51,7 +51,7 @@ export function HeroSection() {
 
             {/* Sub-headline */}
             <BlurFade delay={0.2} duration={0.5}>
-              <p className="max-w-lg text-base sm:text-lg text-muted-foreground text-balance mx-auto">
+              <p className="text-base sm:text-lg text-muted-foreground mx-auto">
                 Bypass detectors and sound completely natural with content that
                 feels like it was written by a real person.
               </p>

@@ -13,17 +13,17 @@ export function PricingFaq() {
       <div className="container-page">
         <div className="flex flex-col gap-12 max-w-3xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col gap-3 items-center text-center">
+          <div className="flex flex-col gap-1 items-center text-center">
             <Badge
               variant="outline"
               className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"
             >
               ✦ FAQ
             </Badge>
-            <h2 id="faq-heading" className="text-balance max-w-xl mx-auto">
+            <h2 id="faq-heading">
               Frequently asked questions
             </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto text-base">
+            <p className="text-muted-foreground mx-auto text-base">
               Everything you need to know about Humanly and our pricing plans.
             </p>
           </div>
