@@ -34,20 +34,20 @@ export function DetectorsSection() {
 
         {/* Marquee rows */}
         <div className="relative flex w-full flex-col items-center justify-center overflow-hidden gap-4">
-          <Marquee pauseOnHover repeat={6} className="[--duration:80s]">
+          <Marquee pauseOnHover repeat={6} className="[--duration:40s]">
             {firstRow.map((detector) => (
               <DetectorCard key={detector.name} detector={detector} />
             ))}
           </Marquee>
-          <Marquee reverse pauseOnHover repeat={6} className="[--duration:80s]">
+          <Marquee reverse pauseOnHover repeat={6} className="[--duration:40s]">
             {secondRow.map((detector) => (
               <DetectorCard key={detector.name} detector={detector} />
             ))}
           </Marquee>
 
           {/* Gradient fade edges */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-background"></div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-linear-to-l from-background"></div>
         </div>
       </div>
     </section>

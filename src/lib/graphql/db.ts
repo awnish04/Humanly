@@ -1,11 +1,14 @@
 /**
- * Simple file-based persistent store.
- * Reads/writes JSON to /data/*.json so data survives server restarts.
- * In production, replace with a real database.
+ * Persistent store backed by Upstash Redis.
+ *
+ * Set these env vars (Vercel dashboard → Storage → Upstash KV → .env.local):
+ *   UPSTASH_REDIS_REST_URL=https://...
+ *   UPSTASH_REDIS_REST_TOKEN=...
+ *
+ * For local dev without Redis, data is kept in-memory (resets on restart).
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { join } from "path";
+import { Redis } from "@upstash/redis";
 import { PLANS as INITIAL_PLANS } from "@/components/pricing/pricing-data";
 
 export interface StoredPlan {
@@ -42,30 +45,16 @@ export interface StoredDiscount {
   updatedAt: string;
 }
 
-const DATA_DIR = join(process.cwd(), "data");
-
-function ensureDir() {
-  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+// ── Redis client (lazy — only created when env vars are present) ──────────────
+function getRedis(): Redis | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  return new Redis({ url, token });
 }
 
-function readJSON<T>(file: string, fallback: T): T {
-  ensureDir();
-  const path = join(DATA_DIR, file);
-  if (!existsSync(path)) return fallback;
-  try {
-    return JSON.parse(readFileSync(path, "utf-8")) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeJSON<T>(file: string, data: T): void {
-  ensureDir();
-  writeFileSync(join(DATA_DIR, file), JSON.stringify(data, null, 2), "utf-8");
-}
-
-// ── Seed defaults ─────────────────────────────────────────────────────────────
-const now = new Date().toISOString();
+// ── In-memory fallback for local dev ─────────────────────────────────────────
+const now = () => new Date().toISOString();
 
 const defaultPlans: StoredPlan[] = INITIAL_PLANS.map((p) => ({
   id: p.id,
@@ -79,8 +68,8 @@ const defaultPlans: StoredPlan[] = INITIAL_PLANS.map((p) => ({
   features: [...p.features],
   stripePriceMonthly: process.env[`STRIPE_PRICE_${p.id.toUpperCase()}_MONTHLY`],
   stripePriceYearly: process.env[`STRIPE_PRICE_${p.id.toUpperCase()}_YEARLY`],
-  createdAt: now,
-  updatedAt: now,
+  createdAt: now(),
+  updatedAt: now(),
 }));
 
 const defaultDiscounts: StoredDiscount[] = [
@@ -98,24 +87,62 @@ const defaultDiscounts: StoredDiscount[] = [
     timerMinutes: 15,
     delaySeconds: 3,
     usageCount: 0,
-    createdAt: now,
-    updatedAt: now,
+    createdAt: now(),
+    updatedAt: now(),
   },
 ];
 
-// ── Public API ────────────────────────────────────────────────────────────────
-export function getPlans(): StoredPlan[] {
-  return readJSON<StoredPlan[]>("plans.json", defaultPlans);
+// In-memory store used when Redis is not configured
+const memStore: {
+  plans: StoredPlan[] | null;
+  discounts: StoredDiscount[] | null;
+} = {
+  plans: null,
+  discounts: null,
+};
+
+// ── Redis keys ────────────────────────────────────────────────────────────────
+const KEYS = {
+  plans: "humanly:plans",
+  discounts: "humanly:discounts",
+} as const;
+
+// ── Plans ─────────────────────────────────────────────────────────────────────
+export async function getPlans(): Promise<StoredPlan[]> {
+  const redis = getRedis();
+  if (!redis) {
+    return memStore.plans ?? defaultPlans;
+  }
+  const data = await redis.get<StoredPlan[]>(KEYS.plans);
+  return data ?? defaultPlans;
 }
 
-export function savePlans(plans: StoredPlan[]): void {
-  writeJSON("plans.json", plans);
+export async function savePlans(plans: StoredPlan[]): Promise<void> {
+  const redis = getRedis();
+  if (!redis) {
+    memStore.plans = plans;
+    return;
+  }
+  await redis.set(KEYS.plans, plans);
 }
 
-export function getDiscounts(): StoredDiscount[] {
-  return readJSON<StoredDiscount[]>("discounts.json", defaultDiscounts);
+// ── Discounts ─────────────────────────────────────────────────────────────────
+export async function getDiscounts(): Promise<StoredDiscount[]> {
+  const redis = getRedis();
+  if (!redis) {
+    return memStore.discounts ?? defaultDiscounts;
+  }
+  const data = await redis.get<StoredDiscount[]>(KEYS.discounts);
+  return data ?? defaultDiscounts;
 }
 
-export function saveDiscounts(discounts: StoredDiscount[]): void {
-  writeJSON("discounts.json", discounts);
+export async function saveDiscounts(
+  discounts: StoredDiscount[],
+): Promise<void> {
+  const redis = getRedis();
+  if (!redis) {
+    memStore.discounts = discounts;
+    return;
+  }
+  await redis.set(KEYS.discounts, discounts);
 }

@@ -11,14 +11,9 @@ interface PlanCardProps {
 
 export function PlanCard({ plan, billing }: PlanCardProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center gap-3 transition-all duration-300",
-        plan.highlight ? "md:-translate-y-8" : "opacity-90 hover:opacity-100",
-      )}
-    >
-      {/* Label above phone */}
-      <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-center gap-3">
+      {/* Fixed-height label row so all phones start at the same Y */}
+      <div className="flex flex-col items-center justify-end gap-1 h-12">
         <span className={cn("text-sm font-bold", plan.accentColor)}>
           {plan.name}
         </span>
@@ -29,8 +24,8 @@ export function PlanCard({ plan, billing }: PlanCardProps) {
         )}
       </div>
 
-      {/* iPhone IS the card */}
-      <div className={cn(plan.highlight ? "w-[19rem]" : "w-[18.5rem]")}>
+      {/* All iPhones same fixed width — aspect ratio drives equal height */}
+      <div className="w-80">
         <Iphone>
           <PlanScreen plan={plan} billing={billing} />
         </Iphone>

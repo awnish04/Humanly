@@ -10,8 +10,7 @@ import { cn } from "@/lib/utils";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./user-menu";
-import { AuthToast } from "./auth-toast";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, PlayCircleIcon } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -21,14 +20,13 @@ const NAV_LINKS = [
 
 const DASHBOARD_ROUTES = ["/user-dashboard", "/admin"];
 
-// Animated hamburger ↔ X toggle
 function MenuToggle({ open, onClick }: { open: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open}
-      className="relative flex size-9 items-center justify-center rounded-lg border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 md:hidden"
+      className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 md:hidden"
     >
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
         <motion.line
@@ -79,6 +77,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
   const [, startTransition] = useTransition();
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     onScroll();
@@ -87,19 +86,15 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const onResize = () => {
+    window.addEventListener("resize", () => {
       if (window.innerWidth >= 768) setMenuOpen(false);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    });
   }, []);
 
-  // Close menu on route change
   useEffect(() => {
     startTransition(() => setMenuOpen(false));
   }, [pathname]);
 
-  // Lock body scroll when open
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -107,8 +102,7 @@ export function Navbar() {
     };
   }, [menuOpen]);
 
-  const isDashboard = DASHBOARD_ROUTES.some((r) => pathname.startsWith(r));
-  if (isDashboard) return null;
+  if (DASHBOARD_ROUTES.some((r) => pathname.startsWith(r))) return null;
 
   return (
     <>
@@ -121,13 +115,6 @@ export function Navbar() {
         )}
         style={{ height: "var(--navbar-height)" }}
       >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
-        >
-          Skip to main content
-        </a>
-
         <div className="container-page h-full grid grid-cols-3 items-center">
           {/* Logo */}
           <Link
@@ -150,20 +137,19 @@ export function Navbar() {
           >
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href;
-              const isHovered = hovered === link.href;
-              const showPill = isHovered || (isActive && !hovered);
+              const isHov = hovered === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   onMouseEnter={() => setHovered(link.href)}
-                  className="relative px-3 py-2 text-sm font-medium rounded-lg"
+                  className="relative px-4 py-2 text-sm font-medium rounded-full"
                 >
-                  {showPill && (
+                  {(isHov || (isActive && !hovered)) && (
                     <motion.span
                       layoutId="nav-pill"
                       className={cn(
-                        "absolute inset-0 rounded-lg",
+                        "absolute inset-0 rounded-full",
                         isActive ? "bg-primary/10" : "bg-muted",
                       )}
                       transition={{
@@ -178,7 +164,7 @@ export function Navbar() {
                       "relative z-10 transition-colors duration-100",
                       isActive
                         ? "text-primary font-semibold"
-                        : isHovered
+                        : isHov
                           ? "text-foreground"
                           : "text-muted-foreground",
                     )}
@@ -190,11 +176,8 @@ export function Navbar() {
             })}
           </nav>
 
-          <div className="md:hidden" />
-
           {/* Actions */}
           <div className="flex items-center justify-end gap-2">
-            <AuthToast />
             <AnimatedThemeToggler
               variant="circle"
               className="flex size-8 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 [&_svg]:size-4"
@@ -204,19 +187,24 @@ export function Navbar() {
             ) : (
               <>
                 <div className="hidden md:flex items-center gap-2">
+                  
+
                   <Link href="/login">
                     <Button
                       variant="outline"
                       size="lg"
-                      className="w-full sm:w-auto"
+                      className="h-12 px-7 text-base font-semibold rounded-full gap-2"
                     >
                       Log in
                     </Button>
                   </Link>
-
                   <Link href="/login">
-                    <Button size="lg" className="w-full sm:w-auto gap-2">
-                      Try for free
+                    <Button
+                      size="lg"
+                      className="h-12 px-7 text-base font-semibold rounded-full gap-2 shadow-lg shadow-primary/20"
+                    >
+                      Try For Free
+                      <ArrowRightIcon className="size-4" aria-hidden />
                     </Button>
                   </Link>
                 </div>
@@ -230,7 +218,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* ── Fullscreen mobile menu ── */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -244,10 +232,8 @@ export function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {/* Blurred backdrop */}
             <div className="absolute inset-0 bg-background/98 backdrop-blur-xl" />
 
-            {/* Slide-in panel */}
             <motion.div
               className="relative z-10 flex flex-col h-full pt-(--navbar-height)"
               initial={{ y: -20, opacity: 0 }}
@@ -256,38 +242,34 @@ export function Navbar() {
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <nav className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
-                {NAV_LINKS.map((link, i) => {
-                  const isActive = pathname === link.href;
-                  return (
-                    <motion.div
-                      key={link.href}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{
-                        delay: 0.06 + i * 0.08,
-                        duration: 0.4,
-                        ease: [0.25, 0.1, 0.25, 1],
-                      }}
-                      className="w-full max-w-xs"
+                {NAV_LINKS.map((link, i) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{
+                      delay: 0.06 + i * 0.08,
+                      duration: 0.4,
+                      ease: [0.25, 0.1, 0.25, 1],
+                    }}
+                    className="w-full max-w-xs"
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className={cn(
+                        "flex items-center justify-center w-full rounded-full px-6 py-4 text-2xl font-bold transition-colors",
+                        pathname === link.href
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground hover:bg-muted",
+                      )}
                     >
-                      <Link
-                        href={link.href}
-                        onClick={() => setMenuOpen(false)}
-                        className={cn(
-                          "flex items-center justify-center w-full rounded-2xl px-6 py-4 text-2xl font-bold transition-colors",
-                          isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-foreground hover:bg-muted",
-                        )}
-                      >
-                        {link.label}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
 
-                {/* Auth buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -302,20 +284,19 @@ export function Navbar() {
                   <Link href="/login" onClick={() => setMenuOpen(false)}>
                     <Button
                       variant="outline"
-                      className="w-full h-12 text-base rounded-2xl"
+                      className="w-full h-12 text-base rounded-full"
                     >
                       Log in
                     </Button>
                   </Link>
                   <Link href="/login" onClick={() => setMenuOpen(false)}>
-                    <Button className="w-full h-12 text-base rounded-2xl">
+                    <Button className="w-full h-12 text-base rounded-full">
                       Try for free
                     </Button>
                   </Link>
                 </motion.div>
               </nav>
 
-              {/* Faded logo watermark at bottom */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Oxanium } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -12,7 +12,7 @@ import { AuthToast } from "@/components/shared/auth-toast";
 import { GoToTopButton } from "@/components/shared/go-to-top-button";
 import { DiscountPopup } from "@/components/shared/discount-popup";
 
-const oxanium = Oxanium({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -45,7 +45,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={cn(
         "h-full antialiased font-sans",
-        oxanium.variable,
+        inter.variable,
         geistMono.variable,
       )}
     >

@@ -14,48 +14,55 @@ function now() {
 export const resolvers = {
   Query: {
     plans: () => getPlans(),
-    plan: (_: unknown, { id }: { id: string }) =>
-      getPlans().find((p) => p.id === id) ?? null,
+    plan: async (_: unknown, { id }: { id: string }) => {
+      const plans = await getPlans();
+      return plans.find((p) => p.id === id) ?? null;
+    },
     discounts: () => getDiscounts(),
-    discount: (_: unknown, { id }: { id: string }) =>
-      getDiscounts().find((d) => d.id === id) ?? null,
-    activeDiscount: () => getDiscounts().find((d) => d.enabled) ?? null,
+    discount: async (_: unknown, { id }: { id: string }) => {
+      const discounts = await getDiscounts();
+      return discounts.find((d) => d.id === id) ?? null;
+    },
+    activeDiscount: async () => {
+      const discounts = await getDiscounts();
+      return discounts.find((d) => d.enabled) ?? null;
+    },
   },
 
   Mutation: {
-    createPlan: (
+    createPlan: async (
       _: unknown,
       { input }: { input: Omit<StoredPlan, "createdAt" | "updatedAt"> },
     ) => {
-      const plans = getPlans();
+      const plans = await getPlans();
       const plan: StoredPlan = { ...input, createdAt: now(), updatedAt: now() };
       plans.push(plan);
-      savePlans(plans);
+      await savePlans(plans);
       return plan;
     },
 
-    updatePlan: (
+    updatePlan: async (
       _: unknown,
       { id, input }: { id: string; input: Partial<StoredPlan> },
     ) => {
-      const plans = getPlans();
+      const plans = await getPlans();
       const idx = plans.findIndex((p) => p.id === id);
       if (idx === -1) throw new Error(`Plan ${id} not found`);
       plans[idx] = { ...plans[idx], ...input, updatedAt: now() };
-      savePlans(plans);
+      await savePlans(plans);
       return plans[idx];
     },
 
-    deletePlan: (_: unknown, { id }: { id: string }) => {
-      const plans = getPlans();
+    deletePlan: async (_: unknown, { id }: { id: string }) => {
+      const plans = await getPlans();
       const idx = plans.findIndex((p) => p.id === id);
       if (idx === -1) return false;
       plans.splice(idx, 1);
-      savePlans(plans);
+      await savePlans(plans);
       return true;
     },
 
-    createDiscount: (
+    createDiscount: async (
       _: unknown,
       {
         input,
@@ -66,7 +73,7 @@ export const resolvers = {
         >;
       },
     ) => {
-      const discounts = getDiscounts();
+      const discounts = await getDiscounts();
       const discount: StoredDiscount = {
         ...input,
         id: crypto.randomUUID(),
@@ -75,40 +82,40 @@ export const resolvers = {
         updatedAt: now(),
       };
       discounts.push(discount);
-      saveDiscounts(discounts);
+      await saveDiscounts(discounts);
       return discount;
     },
 
-    updateDiscount: (
+    updateDiscount: async (
       _: unknown,
       { id, input }: { id: string; input: Partial<StoredDiscount> },
     ) => {
-      const discounts = getDiscounts();
+      const discounts = await getDiscounts();
       const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) throw new Error(`Discount ${id} not found`);
       discounts[idx] = { ...discounts[idx], ...input, updatedAt: now() };
-      saveDiscounts(discounts);
+      await saveDiscounts(discounts);
       return discounts[idx];
     },
 
-    deleteDiscount: (_: unknown, { id }: { id: string }) => {
-      const discounts = getDiscounts();
+    deleteDiscount: async (_: unknown, { id }: { id: string }) => {
+      const discounts = await getDiscounts();
       const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) return false;
       discounts.splice(idx, 1);
-      saveDiscounts(discounts);
+      await saveDiscounts(discounts);
       return true;
     },
 
-    toggleDiscount: (
+    toggleDiscount: async (
       _: unknown,
       { id, enabled }: { id: string; enabled: boolean },
     ) => {
-      const discounts = getDiscounts();
+      const discounts = await getDiscounts();
       const idx = discounts.findIndex((d) => d.id === id);
       if (idx === -1) throw new Error(`Discount ${id} not found`);
       discounts[idx] = { ...discounts[idx], enabled, updatedAt: now() };
-      saveDiscounts(discounts);
+      await saveDiscounts(discounts);
       return discounts[idx];
     },
   },

@@ -1,7 +1,5 @@
-import { CheckCircle2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+/* eslint-disable @next/next/no-img-element */
 import type { Detector } from "./detectors-data";
-import { Card } from "@/components/ui/card";
 
 interface DetectorCardProps {
   detector: Detector;
@@ -9,26 +7,17 @@ interface DetectorCardProps {
 
 export function DetectorCard({ detector }: DetectorCardProps) {
   return (
-    <Card
-      className={cn("relative h-full w-45 lg:w-50 cursor-pointer overflow-hidden p-4")}
-    >
-      <div className="flex flex-col gap-1">
-        {/* Header with status icon */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-foreground">{detector.name}</h3>
-          <CheckCircle2 className="size-5 text-primary" />
-        </div>
-
-        {/* Score display */}
-        <div className="flex flex-col gap-1">
-          <p className="text-lg font-black text-primary leading-none">
-            {detector.score}
-          </p>
-          <p className="text-xs text-muted-foreground uppercase tracking-wide">
-            {detector.status === "bypassed" ? "✓ Bypassed" : "✓ Passed"}
-          </p>
-        </div>
-      </div>
-    </Card>
+    <div className="flex items-center gap-2.5 px-6 shrink-0">
+      <img
+        src={detector.logo}
+        alt={`${detector.name} logo`}
+        width={32}
+        height={32}
+        className="size-15 rounded-full object-cover shrink-0"
+      />
+      <span className="text-2xl font-semibold text-foreground/70 whitespace-nowrap">
+        {detector.name}
+      </span>
+    </div>
   );
 }

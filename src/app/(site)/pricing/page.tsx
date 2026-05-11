@@ -70,7 +70,7 @@ export default function PricingPage() {
         {/* Plans */}
         <div className="section container-page">
           <BlurFade delay={0} duration={0.5} inView>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16">
+            <div className="flex flex-col md:flex-row items-start justify-center gap-8 md:gap-20">
               {PLANS.map((plan) => (
                 <PlanCard key={plan.id} plan={plan} billing={billing} />
               ))}
