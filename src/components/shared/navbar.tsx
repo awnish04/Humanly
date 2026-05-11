@@ -6,11 +6,12 @@ import { useState, useEffect, useTransition } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "@clerk/nextjs";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./user-menu";
-import { ArrowRightIcon, PlayCircleIcon } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
@@ -26,7 +27,7 @@ function MenuToggle({ open, onClick }: { open: boolean; onClick: () => void }) {
       onClick={onClick}
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open}
-      className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 md:hidden"
+      className="flex size-9 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 lg:hidden"
     >
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
         <motion.line
@@ -76,6 +77,7 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   const pathname = usePathname();
   const { isSignedIn } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [, startTransition] = useTransition();
 
   useEffect(() => {
@@ -86,9 +88,11 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      if (window.innerWidth >= 768) setMenuOpen(false);
-    });
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setMenuOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
   useEffect(() => {
@@ -115,24 +119,26 @@ export function Navbar() {
         )}
         style={{ height: "var(--navbar-height)" }}
       >
-        <div className="container-page h-full grid grid-cols-3 items-center">
+        <div className="container-page h-full grid grid-cols-2 lg:grid-cols-3 items-center">
           {/* Logo */}
-          <Link
-            href="/"
-            aria-label="Humanly home"
-            className="flex shrink-0 items-center"
-          >
-            <img
-              src="/HumanlyLogo-2.png"
-              alt="Humanly"
-              className="h-12 w-auto object-contain select-none"
-            />
-          </Link>
+          <div className="flex items-center justify-start">
+            <Link
+              href="/"
+              aria-label="Humanly home"
+              className="flex shrink-0 items-center"
+            >
+              <img
+                src="/HumanlyLogoPurple-2.png"
+                alt="Humanly"
+                className="h-12 w-auto object-contain select-none"
+              />
+            </Link>
+          </div>
 
-          {/* Desktop nav */}
+          {/* Desktop nav — centered, lg only */}
           <nav
             aria-label="Main navigation"
-            className="hidden md:flex items-center justify-center gap-1"
+            className="hidden lg:flex items-center gap-1 flex-1 justify-center"
             onMouseLeave={() => setHovered(null)}
           >
             {NAV_LINKS.map((link) => {
@@ -176,44 +182,35 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Actions */}
+          {/* Right side */}
           <div className="flex items-center justify-end gap-2">
-            <AnimatedThemeToggler
-              variant="circle"
-              className="flex size-8 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 [&_svg]:size-4"
-            />
-            {isSignedIn ? (
-              <UserMenu />
-            ) : (
-              <>
-                <div className="hidden md:flex items-center gap-2">
-                  
-
+            {/* Desktop only: theme toggle + auth */}
+            <div className="hidden lg:flex items-center gap-3">
+              <AnimatedThemeToggler
+                variant="circle"
+                className="flex p-2 items-center justify-center rounded-full border border-border bg-muted text-foreground transition-colors hover:bg-muted/80 [&_svg]:size-4"
+              />
+              {isSignedIn ? (
+                <UserMenu />
+              ) : (
+                <div className="flex items-center gap-2">
                   <Link href="/login">
                     <Button
-                      variant="outline"
-                      size="lg"
-                      className="h-12 px-7 text-base font-semibold rounded-full gap-2"
+                      variant="ghost"
+                      className="h-9 px-4 text-sm font-medium rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
                     >
                       Log in
                     </Button>
                   </Link>
-                  <Link href="/login">
-                    <Button
-                      size="lg"
-                      className="h-12 px-7 text-base font-semibold rounded-full gap-2 shadow-lg shadow-primary/20"
-                    >
-                      Try For Free
-                      <ArrowRightIcon className="size-4" aria-hidden />
-                    </Button>
-                  </Link>
                 </div>
-                <MenuToggle
-                  open={menuOpen}
-                  onClick={() => setMenuOpen((v) => !v)}
-                />
-              </>
-            )}
+              )}
+            </div>
+
+            {/* Mobile: hamburger only */}
+            <MenuToggle
+              open={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            />
           </div>
         </div>
       </header>
@@ -226,7 +223,7 @@ export function Navbar() {
             role="dialog"
             aria-label="Mobile navigation"
             aria-modal="true"
-            className="fixed inset-0 z-40 flex flex-col md:hidden"
+            className="fixed inset-0 z-40 flex flex-col lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -242,6 +239,7 @@ export function Navbar() {
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <nav className="flex flex-col items-center justify-center flex-1 gap-3 px-6">
+                {/* Nav links */}
                 {NAV_LINKS.map((link, i) => (
                   <motion.div
                     key={link.href}
@@ -270,6 +268,7 @@ export function Navbar() {
                   </motion.div>
                 ))}
 
+                {/* Auth + theme section */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -279,24 +278,61 @@ export function Navbar() {
                     duration: 0.4,
                     ease: [0.25, 0.1, 0.25, 1],
                   }}
-                  className="w-full max-w-xs flex flex-col gap-3 mt-4 pt-4 border-t border-border"
+                  className="w-full max-w-xs flex flex-col gap-2 pt-4 border-t border-border"
                 >
-                  <Link href="/login" onClick={() => setMenuOpen(false)}>
-                    <Button
-                      variant="outline"
-                      className="w-full h-12 text-base rounded-full"
+                  {/* Inline theme switcher — Sun / Moon pill */}
+                  <div className="flex items-center gap-1 mx-1 mt-1 rounded-lg border border-border bg-muted p-1">
+                    <button
+                      onClick={() => setTheme("light")}
+                      aria-label="Light mode"
+                      className={cn(
+                        "flex-1 flex items-center justify-center py-1 rounded-md transition-colors",
+                        theme === "light"
+                          ? "bg-background shadow-sm text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
                     >
-                      Log in
-                    </Button>
-                  </Link>
-                  <Link href="/login" onClick={() => setMenuOpen(false)}>
-                    <Button className="w-full h-12 text-base rounded-full">
-                      Try for free
-                    </Button>
-                  </Link>
+                      <Sun className="size-3.5" aria-hidden />
+                    </button>
+                    <button
+                      onClick={() => setTheme("dark")}
+                      aria-label="Dark mode"
+                      className={cn(
+                        "flex-1 flex items-center justify-center py-1 rounded-md transition-colors",
+                        theme === "dark"
+                          ? "bg-background shadow-sm text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Moon className="size-3.5" aria-hidden />
+                    </button>
+                  </div>
+
+                  {isSignedIn ? (
+                    /* Signed-in: full card row triggers UserMenu dropdown */
+                    <UserMenu variant="card" />
+                  ) : (
+                    /* Signed-out: login + try for free */
+                    <>
+                      <Link href="/login" onClick={() => setMenuOpen(false)}>
+                        <Button
+                          variant="outline"
+                          className="w-full h-12 text-base rounded-xl"
+                        >
+                          Log in
+                        </Button>
+                      </Link>
+                      <Link href="/login" onClick={() => setMenuOpen(false)}>
+                        <Button className="w-full h-12 text-base rounded-xl">
+                          Try for free
+                        </Button>
+                      </Link>
+                    </>
+                  )}
                 </motion.div>
               </nav>
 
+              {/* Bottom logo watermark */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -305,7 +341,7 @@ export function Navbar() {
                 className="pb-10 flex justify-center"
               >
                 <img
-                  src="/HumanlyLogo-2.png"
+                  src="/HumanlyLogoPurple-2.png"
                   alt=""
                   className="h-7 w-auto opacity-15 select-none"
                 />

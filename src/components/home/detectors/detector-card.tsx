@@ -7,15 +7,15 @@ interface DetectorCardProps {
 
 export function DetectorCard({ detector }: DetectorCardProps) {
   return (
-    <div className="flex items-center gap-2.5 px-6 shrink-0">
+    <div className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-5 lg:px-6 shrink-0">
       <img
         src={detector.logo}
         alt={`${detector.name} logo`}
         width={32}
         height={32}
-        className="size-15 rounded-full object-cover shrink-0"
+        className="size-7 sm:size-9 lg:size-12 rounded-full object-cover shrink-0"
       />
-      <span className="text-2xl font-semibold text-foreground/70 whitespace-nowrap">
+      <span className="text-xs sm:text-base lg:text-2xl font-semibold text-foreground/70 whitespace-nowrap">
         {detector.name}
       </span>
     </div>

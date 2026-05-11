@@ -67,9 +67,11 @@ export function Footer() {
               className="flex items-center gap-2.5 w-fit"
               aria-label="Humanly home"
             >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground select-none">
-                H
-              </span>
+              <img
+                src="/HumanlyLogoPurple-2.png"
+                alt="Humanly"
+                className="h-12 w-auto object-contain select-none"
+              />
               <span className="text-lg font-bold tracking-tight text-foreground">
                 Humanly
               </span>

@@ -43,8 +43,6 @@ export function CtaSection() {
           aria-hidden
         />
 
-
-
         {/* Eyebrow */}
         <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
           <SparklesIcon className="size-3.5 text-primary" aria-hidden />
@@ -84,13 +82,16 @@ export function CtaSection() {
             <Button
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto px-8"
+              className="w-full sm:w-auto h-12 px-7 text-base font-semibold rounded-xl gap-2"
             >
               Contact
             </Button>
           </Link>
           <Link href="/login">
-            <Button size="lg" className="w-full sm:w-auto px-8 gap-2">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto h-12 px-7 text-base font-semibold rounded-xl gap-2"
+            >
               Get Started Free
               <ArrowRightIcon className="size-4" aria-hidden />
             </Button>

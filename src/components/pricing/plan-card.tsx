@@ -24,8 +24,8 @@ export function PlanCard({ plan, billing }: PlanCardProps) {
         )}
       </div>
 
-      {/* All iPhones same fixed width — aspect ratio drives equal height */}
-      <div className="w-80">
+      {/* All iPhones same width — responsive: full on mobile, fixed on sm+ */}
+      <div className="w-74 lg:w-76">
         <Iphone>
           <PlanScreen plan={plan} billing={billing} />
         </Iphone>

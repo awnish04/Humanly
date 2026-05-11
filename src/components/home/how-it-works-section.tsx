@@ -30,10 +30,10 @@ export function HowItWorksSection() {
 
         {/* Flow diagram */}
         <BlurFade delay={0.2} duration={0.6} inView>
-          <div className="max-w-full mx-auto overflow-hidden">
+          <div className="max-w-5xl mx-auto overflow-hidden">
             <FlowDiagram />
             {/* Bottom step cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-6 px-4 sm:pt-6 border-t border-border">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 py-4 px-4 sm:py-4 border-t border-border">
               {[
                 {
                   step: "01",
