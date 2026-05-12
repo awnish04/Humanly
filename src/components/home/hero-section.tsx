@@ -73,7 +73,7 @@ export function HeroSection() {
             w-full sm:w-auto: buttons fill width on mobile, auto on desktop
         */}
         <BlurFade delay={0.3} duration={0.4}>
-          <div className="flex flex-col items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <Link href="/login" className="w-full sm:w-auto">
               <Button
                 size="lg"

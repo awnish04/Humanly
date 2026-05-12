@@ -77,7 +77,7 @@ export function CtaSection() {
         </ul>
 
         {/* CTA buttons */}
-        <div className="flex flex-col items-center justify-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
           <Link href="/contact">
             <Button
               variant="outline"
