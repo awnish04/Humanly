@@ -12,7 +12,7 @@ export function StatCard({ stat, index }: StatCardProps) {
       {/* Vertical divider — hidden on the first item */}
       {index > 0 && (
         <span
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-px bg-border"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-px "
           aria-hidden
         />
       )}
