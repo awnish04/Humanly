@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Local persistent data store
 /data/*.json
+
+# Visitor analytics data
+/data/analytics/

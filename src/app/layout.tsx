@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthToast } from "@/components/shared/auth-toast";
 import { GoToTopButton } from "@/components/shared/go-to-top-button";
 import { DiscountPopup } from "@/components/shared/discount-popup";
+import { VisitorTracker } from "@/components/admin/visitor-tracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -63,6 +64,7 @@ export default function RootLayout({
             <Toaster richColors position="top-center" />
             <GoToTopButton />
             <DiscountPopup />
+            <VisitorTracker />
           </ThemeProvider>
         </ClerkProvider>
       </body>

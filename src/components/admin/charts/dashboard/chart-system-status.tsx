@@ -76,9 +76,9 @@ export function ChartSystemStatus({ services, checkedAt }: Props) {
           </span>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4 flex-1">
+      <CardContent className="flex flex-col gap-4 flex-1 pb-4">
         {/* Latency bar chart */}
-        <ChartContainer config={chartConfig} className="h-28 w-full">
+        <ChartContainer config={chartConfig} className="h-[180px] w-full">
           <BarChart
             data={chartData}
             layout="vertical"

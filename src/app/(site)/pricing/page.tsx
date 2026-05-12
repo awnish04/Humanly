@@ -68,14 +68,16 @@ export default function PricingPage() {
         </div>
 
         {/* Plans */}
-        <div className="section container-page relative overflow-hidden">
-          <BlurFade delay={0} duration={0.5} inView>
-            <div className="flex flex-wrap items-start justify-center gap-8 lg:gap-20">
-              {PLANS.map((plan) => (
-                <PlanCard key={plan.id} plan={plan} billing={billing} />
-              ))}
-            </div>
-          </BlurFade>
+        <div className="section">
+          <div>
+            <BlurFade delay={0} duration={0.5} inView>
+              <div className="flex flex-col w-full items-center gap-10 md:flex-row md:items-stretch md:justify-center md:gap-6 lg:gap-10">
+                {PLANS.map((plan) => (
+                  <PlanCard key={plan.id} plan={plan} billing={billing} />
+                ))}
+              </div>
+            </BlurFade>
+          </div>
         </div>
       </section>
 

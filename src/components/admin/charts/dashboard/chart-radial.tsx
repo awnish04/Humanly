@@ -41,10 +41,10 @@ export function ChartRadial({ planCounts, wordsByPlan }: Props) {
         <CardTitle>Word Usage by Plan</CardTitle>
         <CardDescription>Actual words processed per plan tier</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-4">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[300px] w-full"
         >
           <RadialBarChart data={chartData} innerRadius={30} outerRadius={110}>
             <ChartTooltip

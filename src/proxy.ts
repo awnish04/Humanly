@@ -14,6 +14,10 @@ const isPublicRoute = createRouteMatcher([
   "/api/humanize",
   "/api/checkout",
   "/api/graphql",
+  "/api/track-visitor",
+  "/api/visitor-stats",
+  "/api/track-time",
+  "/api/track-click",
   // Admin auth routes are public (login page + API)
   "/admin/login(.*)",
   "/api/auth/admin-login(.*)",

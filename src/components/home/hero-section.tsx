@@ -113,7 +113,7 @@ export function HeroSection() {
       */}
       <div
         id="humanizer"
-        className="relative container-page z-10 w-full max-w-5xl mt-10"
+        className="relative  z-10 w-full max-w-5xl mt-10"
       >
         <BlurFade delay={0.55} duration={0.6}>
           <HumanizerCard />

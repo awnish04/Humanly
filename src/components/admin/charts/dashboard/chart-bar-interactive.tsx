@@ -40,7 +40,7 @@ export function ChartBarInteractive({ data }: Props) {
   );
 
   return (
-    <Card className="py-0">
+    <Card className="p-0">
       <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-2 sm:py-0!">
           <CardTitle>Signups vs Requests</CardTitle>
@@ -51,7 +51,7 @@ export function ChartBarInteractive({ data }: Props) {
             <button
               key={key}
               data-active={activeChart === key}
-              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-10 py-2 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-t-0 sm:border-l"
               onClick={() => setActiveChart(key)}
             >
               <span className="text-xs text-muted-foreground">
@@ -67,7 +67,7 @@ export function ChartBarInteractive({ data }: Props) {
       <CardContent className="px-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[180px] w-full"
+          className="aspect-auto h-[300px] w-full"
         >
           <BarChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />

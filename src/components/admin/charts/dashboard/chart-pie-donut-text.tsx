@@ -47,10 +47,10 @@ export function ChartPieDonutText({ planCounts }: Props) {
         <CardTitle>Plan Distribution</CardTitle>
         <CardDescription>Users by subscription plan</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1 pb-4">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[300px] w-full"
         >
           <PieChart>
             <ChartTooltip

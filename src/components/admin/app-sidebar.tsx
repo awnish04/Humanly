@@ -13,6 +13,7 @@ import {
   Zap,
   CreditCard,
   Percent,
+  MousePointerClick,
 } from "lucide-react";
 import { NavMain } from "@/components/admin/nav-main";
 import { NavUser } from "@/components/admin/nav-user";
@@ -31,7 +32,12 @@ import Link from "next/link";
 
 const NAV_ANALYTICS = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
-  { title: "Analytics", url: "/admin/analytics", icon: BarChart2 },
+  { title: "Visitor Activity", url: "/admin/analytics", icon: BarChart2 },
+  {
+    title: "Click Analytics",
+    url: "/admin/click-analytics",
+    icon: MousePointerClick,
+  },
 ];
 
 const NAV_USERS = [

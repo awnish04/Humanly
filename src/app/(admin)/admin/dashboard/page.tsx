@@ -12,12 +12,12 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { ChartAreaInteractive } from "@/components/admin/charts/chart-area-interactive";
-import { ChartBarInteractive } from "@/components/admin/charts/chart-bar-interactive";
-import { ChartPieDonutText } from "@/components/admin/charts/chart-pie-donut-text";
-import { ChartRadial } from "@/components/admin/charts/chart-radial";
-import { ChartUserGrowth } from "@/components/admin/charts/chart-user-growth";
-import { ChartSystemStatus } from "@/components/admin/charts/chart-system-status";
+import { ChartAreaInteractive } from "@/components/admin/charts/dashboard/chart-area-interactive";
+import { ChartBarInteractive } from "@/components/admin/charts/dashboard/chart-bar-interactive";
+import { ChartPieDonutText } from "@/components/admin/charts/dashboard/chart-pie-donut-text";
+import { ChartRadial } from "@/components/admin/charts/dashboard/chart-radial";
+import { ChartUserGrowth } from "@/components/admin/charts/dashboard/chart-user-growth";
+import { ChartSystemStatus } from "@/components/admin/charts/dashboard/chart-system-status";
 
 interface AdminStats {
   totalUsers: number;
