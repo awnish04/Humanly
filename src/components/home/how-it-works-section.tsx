@@ -10,23 +10,27 @@ export function HowItWorksSection() {
     <section aria-label="How it works" className="section">
       <div className="container-page">
         {/* Header */}
-        <BlurFade delay={0} duration={0.5} inView>
-          <div className="mb-12 flex flex-col gap-1 items-center text-center">
+
+        <div className="mb-12 flex flex-col gap-1 items-center text-center">
+          <BlurFade delay={0} duration={0.4} inView>
             <Badge
               variant="outline"
               className="w-fit rounded-full border-primary/30 text-primary px-3 py-1 text-xs"
             >
               ✦ How it works
             </Badge>
+          </BlurFade>
+
+          <BlurFade delay={0} duration={0.5} inView>
             <h2 className="max-w-3xl">
-              From robotic AI text to undetectable human writing
+              From AI Text To Undetectable Human Writing
             </h2>
             <p className="text-muted-foreground mx-auto text-base">
               Paste any AI-generated content, let Humanly process it, and get
               natural sounding output in seconds.
             </p>
-          </div>
-        </BlurFade>
+          </BlurFade>
+        </div>
 
         {/* Flow diagram */}
         <BlurFade delay={0.2} duration={0.6} inView>

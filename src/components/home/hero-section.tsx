@@ -111,7 +111,10 @@ export function HeroSection() {
           mt-10: gap between text block and card
           id="humanizer": scroll target for the "See How It Works" button
       */}
-      <div id="humanizer" className="relative z-10 w-full max-w-5xl mt-10">
+      <div
+        id="humanizer"
+        className="relative container-page z-10 w-full max-w-5xl mt-10"
+      >
         <BlurFade delay={0.55} duration={0.6}>
           <HumanizerCard />
         </BlurFade>

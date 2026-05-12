@@ -15,7 +15,7 @@ export function DetectorCard({ detector }: DetectorCardProps) {
         height={32}
         className="size-7 sm:size-9 lg:size-12 rounded-full object-cover shrink-0"
       />
-      <span className="text-xs sm:text-base lg:text-2xl font-semibold text-foreground/70 whitespace-nowrap">
+      <span className="text-xs sm:text-base lg:text-lg font-semibold text-foreground/70 whitespace-nowrap">
         {detector.name}
       </span>
     </div>
