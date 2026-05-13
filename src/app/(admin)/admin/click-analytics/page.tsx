@@ -5,7 +5,7 @@
  * Tracks and visualizes user click events
  */
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,6 +19,14 @@ import {
   Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 import { getCountryFlag } from "@/lib/country-flags";
 import {
   CardHeader,
@@ -26,12 +34,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ClickElementPie } from "@/components/admin/charts/click-analytics/click-element-pie";
 import { ClickDailyArea } from "@/components/admin/charts/click-analytics/click-daily-area";
 import { ClickPagesRadial } from "@/components/admin/charts/click-analytics/click-pages-radial";
@@ -55,6 +57,7 @@ interface ClickStats {
     country: string;
     countryCode: string;
     device: string;
+    os: string;
     browser: string;
   }>;
 }
@@ -156,9 +159,18 @@ export default function ClickAnalyticsPage() {
   return (
     <>
       <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4 sticky top-0 bg-background/80 backdrop-blur-sm z-10">
-        <div className="flex items-center gap-2">
-          <h1 className="text-sm font-semibold">Click Analytics</h1>
-        </div>
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 data-[orientation=vertical]:h-full"
+        />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Click Analytics</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="ml-auto flex items-center gap-3">
           <span className="text-xs text-muted-foreground hidden sm:block">
             Updated {now}
@@ -297,7 +309,7 @@ export default function ClickAnalyticsPage() {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
-                      Time
+                      Date & Time
                     </th>
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
                       Page
@@ -317,6 +329,9 @@ export default function ClickAnalyticsPage() {
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
                       Device
                     </th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
+                      OS
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -326,15 +341,27 @@ export default function ClickAnalyticsPage() {
                       className="border-b border-border/50 hover:bg-muted/50 transition-colors"
                     >
                       <td className="py-3 px-2">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Clock className="size-3" />
-                          {new Date(click.timestamp).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
-                          )}
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-2 text-xs text-foreground font-medium">
+                            <Clock className="size-3" />
+                            {new Date(click.timestamp).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground pl-5">
+                            {new Date(click.timestamp).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-2">
@@ -372,12 +399,14 @@ export default function ClickAnalyticsPage() {
                         </div>
                       </td>
                       <td className="py-3 px-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center">
                           {deviceIcon(click.device)}
-                          <span className="text-xs text-foreground capitalize">
-                            {click.device}
-                          </span>
                         </div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-xs text-foreground">
+                          {click.os || "Unknown"}
+                        </span>
                       </td>
                     </tr>
                   ))}

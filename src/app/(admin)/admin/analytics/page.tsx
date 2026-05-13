@@ -35,6 +35,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<VisitorStats | null>(null);
@@ -106,11 +114,12 @@ export default function AnalyticsPage() {
       );
       const mobile = dayVisitors.filter((v) => v.device === "mobile").length;
       const desktop = dayVisitors.filter((v) => v.device === "desktop").length;
+      const tablet = dayVisitors.filter((v) => v.device === "tablet").length;
 
       return {
         date: day.date,
-        mobile: mobile || Math.floor(day.visits * 0.4),
-        desktop: desktop || Math.floor(day.visits * 0.6),
+        mobile: mobile,
+        desktop: desktop + tablet, // Group desktop and tablet together
       };
     });
 
@@ -198,9 +207,18 @@ export default function AnalyticsPage() {
   return (
     <>
       <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4 sticky top-0 bg-background/80 backdrop-blur-sm z-10">
-        <div className="flex items-center gap-2">
-          <h1 className="text-sm font-semibold">Visitor Activity</h1>
-        </div>
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 data-[orientation=vertical]:h-full"
+        />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Visitor Activity</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="ml-auto flex items-center gap-3">
           <span className="text-xs text-muted-foreground hidden sm:block">
             Updated {now}
@@ -379,13 +397,16 @@ export default function AnalyticsPage() {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
-                      Time
+                      Date & Time
                     </th>
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
                       Location
                     </th>
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
                       Device
+                    </th>
+                    <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
+                      OS
                     </th>
                     <th className="text-left text-xs font-semibold text-muted-foreground py-3 px-2">
                       Browser
@@ -408,15 +429,27 @@ export default function AnalyticsPage() {
                       className="border-b border-border/50 hover:bg-muted/50 transition-colors"
                     >
                       <td className="py-3 px-2">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Clock className="size-3" />
-                          {new Date(visitor.timestamp).toLocaleTimeString(
-                            "en-US",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            },
-                          )}
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-2 text-xs text-foreground font-medium">
+                            <Clock className="size-3" />
+                            {new Date(visitor.timestamp).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground pl-5">
+                            {new Date(visitor.timestamp).toLocaleTimeString(
+                              "en-US",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </span>
                         </div>
                       </td>
                       <td className="py-3 px-2">
@@ -430,12 +463,14 @@ export default function AnalyticsPage() {
                         </div>
                       </td>
                       <td className="py-3 px-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center">
                           {deviceIcon(visitor.device)}
-                          <span className="text-xs text-foreground capitalize">
-                            {visitor.device}
-                          </span>
                         </div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <span className="text-xs text-foreground">
+                          {visitor.os}
+                        </span>
                       </td>
                       <td className="py-3 px-2">
                         <span className="text-xs text-foreground">

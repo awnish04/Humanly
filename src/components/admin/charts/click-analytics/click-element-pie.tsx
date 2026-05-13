@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, MousePointerClick } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { Pie, PieChart } from "recharts";
 import {
   Card,
@@ -56,9 +56,7 @@ export function ClickElementPie({ topElements }: ClickElementPieProps) {
   ].filter((d) => d.clicks > 0);
 
   const chartConfig = {
-    clicks: {
-      label: "Clicks",
-    },
+    clicks: { label: "Clicks" },
     element1: {
       label: sortedElements[0]?.element || "Element 1",
       color: "var(--chart-1)",
@@ -87,63 +85,53 @@ export function ClickElementPie({ topElements }: ClickElementPieProps) {
     ? ((sortedElements[0].count / totalClicks) * 100).toFixed(1)
     : 0;
 
-  if (chartData.length === 0) {
-    return (
-      <Card>
-        <CardHeader className="items-center pb-0">
-          <CardTitle className="flex items-center gap-2">
-            <MousePointerClick className="size-4" />
-            Clicks by Element Type
-          </CardTitle>
-          <CardDescription>Distribution of clicked elements</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 pb-0">
-          <div className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
-            No click data available yet
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader className="items-center pb-0">
         <CardTitle className="flex items-center gap-2">
-          <MousePointerClick className="size-4" />
           Clicks by Element Type
         </CardTitle>
         <CardDescription>Distribution of clicked elements</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-4">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px] w-full"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="clicks"
-              nameKey="element"
-              stroke="0"
-            />
-          </PieChart>
-        </ChartContainer>
+
+      <CardContent className="flex-1 pb-0">
+        {chartData.length === 0 ? (
+          <div className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
+            No click data available yet
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[300px] w-full"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie
+                data={chartData}
+                dataKey="clicks"
+                nameKey="element"
+                stroke="0"
+              />
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          <TrendingUp className="h-4 w-4" />
-          Most clicked: {topElement} ({topPercentage}%)
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Total {totalClicks.toLocaleString()} clicks across{" "}
-          {sortedElements.length} element types
-        </div>
-      </CardFooter>
+
+      {chartData.length > 0 && (
+        <CardFooter className="flex-col gap-2 text-sm">
+          <div className="flex items-center gap-2 font-medium leading-none">
+            <TrendingUp className="h-4 w-4" />
+            Most clicked: {topElement} ({topPercentage}%)
+          </div>
+          <div className="leading-none text-muted-foreground">
+            Total {totalClicks.toLocaleString()} clicks across{" "}
+            {sortedElements.length} element types
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

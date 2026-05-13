@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 /**
  * POST /api/detect
+ *
+ * ⚠️ DEPRECATED: This endpoint is deprecated. Use /api/detect/text instead.
+ *
+ * This endpoint will be removed in a future version.
+ * Please update your code to use the new endpoint structure.
+ *
  * Detects AI content using Sapling.ai's free detection API.
  * Returns { ai, assisted, human } as percentages (0-100).
  *

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -79,7 +80,7 @@ export default function AdminPricingPage() {
   const [form, setForm] = useState(EMPTY);
   const [featureInput, setFeatureInput] = useState("");
 
-  const fetchPlans = useCallback(async () => {
+  const fetchPlans = async () => {
     setLoading(true);
     try {
       const data = await gql<{ plans: Plan[] }>(PLANS_QUERY);
@@ -89,11 +90,11 @@ export default function AdminPricingPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchPlans();
-  }, [fetchPlans]);
+  }, []);
 
   const openCreate = () => {
     setEditing(null);
@@ -161,7 +162,7 @@ export default function AdminPricingPage() {
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
+          className="mr-2 data-[orientation=vertical]:h-full"
         />
         <Breadcrumb>
           <BreadcrumbList>

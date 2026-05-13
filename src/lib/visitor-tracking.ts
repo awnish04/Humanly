@@ -62,6 +62,7 @@ export interface ClickData {
   country: string;
   countryCode: string;
   device: string;
+  os: string;
   browser: string;
 }
 
@@ -161,13 +162,67 @@ export function parseUserAgent(userAgent: string) {
     device = "mobile";
   }
 
-  // Detect OS
+  // Detect OS with better specificity
   let os = "Unknown";
-  if (ua.includes("windows")) os = "Windows";
-  else if (ua.includes("mac")) os = "macOS";
-  else if (ua.includes("linux")) os = "Linux";
-  else if (ua.includes("android")) os = "Android";
-  else if (ua.includes("iphone") || ua.includes("ipad")) os = "iOS";
+
+  // Check mobile/tablet OS first (more specific)
+  if (ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod")) {
+    os = "iOS";
+    // Extract iOS version if available
+    const iosVersion = userAgent.match(/OS (\d+)[_.](\d+)/i);
+    if (iosVersion) {
+      os = `iOS ${iosVersion[1]}.${iosVersion[2]}`;
+    }
+  } else if (ua.includes("android")) {
+    os = "Android";
+    // Extract Android version if available
+    const androidVersion = userAgent.match(/Android (\d+\.?\d*)/i);
+    if (androidVersion) {
+      os = `Android ${androidVersion[1]}`;
+    }
+  }
+  // Then check desktop OS
+  else if (ua.includes("windows nt 10.0")) {
+    os = "Windows 10/11";
+  } else if (ua.includes("windows nt 6.3")) {
+    os = "Windows 8.1";
+  } else if (ua.includes("windows nt 6.2")) {
+    os = "Windows 8";
+  } else if (ua.includes("windows nt 6.1")) {
+    os = "Windows 7";
+  } else if (ua.includes("windows")) {
+    os = "Windows";
+  } else if (ua.includes("mac os x")) {
+    // Extract macOS version
+    const macVersion = userAgent.match(/Mac OS X (\d+)[_.](\d+)/i);
+    if (macVersion) {
+      const major = parseInt(macVersion[1]);
+      const minor = parseInt(macVersion[2]);
+      // Map version numbers to macOS names
+      if (major === 10) {
+        if (minor >= 15) os = "macOS Catalina+";
+        else if (minor === 14) os = "macOS Mojave";
+        else if (minor === 13) os = "macOS High Sierra";
+        else os = `macOS 10.${minor}`;
+      } else if (major >= 11) {
+        os = `macOS ${major}`;
+      } else {
+        os = "macOS";
+      }
+    } else {
+      os = "macOS";
+    }
+  } else if (ua.includes("mac")) {
+    os = "macOS";
+  } else if (ua.includes("linux")) {
+    // Check for specific Linux distributions
+    if (ua.includes("ubuntu")) os = "Ubuntu";
+    else if (ua.includes("fedora")) os = "Fedora";
+    else if (ua.includes("debian")) os = "Debian";
+    else os = "Linux";
+  } else if (ua.includes("cros")) {
+    os = "Chrome OS";
+  }
 
   // Detect browser (order matters - check specific browsers first!)
   let browser = "Unknown";

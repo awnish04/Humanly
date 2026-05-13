@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     const geoData = await getGeoLocation(ip);
 
     // Parse user agent for device/browser info
-    const { device, browser } = parseUserAgent(userAgent);
+    const { device, os, browser } = parseUserAgent(userAgent);
 
     // Generate visitor ID and session ID from cookies/headers if available
     const visitorId = request.cookies.get("visitor_id")?.value || "unknown";
@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       country: geoData.country,
       countryCode: geoData.countryCode,
       device,
+      os,
       browser,
     });
 
