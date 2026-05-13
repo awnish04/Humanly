@@ -31,7 +31,13 @@ export function UserMenu({ variant = "avatar" }: UserMenuProps) {
   }, []);
 
   const handleSignOut = async () => {
+    console.log(
+      "🚪 User signing out:",
+      user?.id,
+      user?.emailAddresses?.[0]?.emailAddress,
+    );
     await signOut({ redirectUrl: "/" });
+    console.log("✅ Sign out completed");
     toast.success("Signed out successfully");
   };
 

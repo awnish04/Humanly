@@ -1,37 +1,42 @@
 import { NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 export async function GET() {
   try {
-    const clerk = await clerkClient();
-    const { data: users } = await clerk.users.getUserList({
-      limit: 500,
-      orderBy: "-created_at",
-    });
+    const allUsers = await db
+      .select()
+      .from(users)
+      .where(eq(users.deleted, false))
+      .orderBy(desc(users.createdAt));
 
-    const result = users.map((user) => {
-      const meta = user.publicMetadata as {
-        plan?: string;
-        wordsUsed?: number;
-        wordsLimit?: number;
-        requests?: number;
-        billing?: string;
-      };
+    if (allUsers.length === 0) {
+      console.warn("⚠️ No users in DB — may be a sync issue");
+    }
+
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+
+    const result = allUsers.map((user) => {
+      const isReallyOnline =
+        user.isOnline === true &&
+        user.lastSeenAt !== null &&
+        user.lastSeenAt > twoMinutesAgo;
 
       return {
         id: user.id,
-        name: user.fullName ?? user.firstName ?? "Unknown",
-        email: user.emailAddresses?.[0]?.emailAddress ?? "",
-        avatar: user.imageUrl,
-        plan: meta.plan ?? "free",
-        billing: meta.billing ?? null,
-        wordsUsed: meta.wordsUsed ?? 0,
-        wordsLimit: meta.wordsLimit ?? 500,
-        requests: meta.requests ?? 0,
-        createdAt: new Date(user.createdAt).toISOString(),
-        lastSignIn: user.lastSignInAt
-          ? new Date(user.lastSignInAt).toISOString()
-          : null,
+        name: user.name ?? "Unknown",
+        email: user.email,
+        avatar: user.avatar ?? "",
+        plan: user.plan,
+        billing: user.billing,
+        wordsUsed: user.wordsUsed,
+        wordsLimit: user.wordsLimit,
+        requests: user.requests,
+        createdAt: user.createdAt.toISOString(),
+        lastSignIn: user.lastSignInAt?.toISOString() ?? null,
+        isOnline: isReallyOnline,
+        lastSeenAt: user.lastSeenAt?.toISOString() ?? null,
       };
     });
 

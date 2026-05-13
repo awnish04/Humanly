@@ -17,7 +17,7 @@ export function HeroSection() {
       aria-label="AI Text Humanizer"
       // overflow-hidden removed — it was clipping the headline on small screens
       // pt accounts for the floating navbar height
-      className="relative flex flex-col items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16"
+      className="relative container-page flex flex-col items-center justify-center pt-24 sm:pt-28 pb-12 sm:pb-16"
     >
       {/* Background glow — purely decorative */}
       <div
@@ -83,7 +83,7 @@ export function HeroSection() {
                 <ArrowRightIcon className="size-4" aria-hidden />
               </Button>
             </Link>
-            <Link href="#humanizer" className="w-full sm:w-auto">
+            {/* <Link href="#humanizer" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="lg"
@@ -92,7 +92,7 @@ export function HeroSection() {
                 <PlayCircleIcon className="size-4 text-primary" aria-hidden />
                 See How It Works
               </Button>
-            </Link>
+            </Link> */}
           </div>
         </BlurFade>
 
@@ -111,14 +111,14 @@ export function HeroSection() {
           mt-10: gap between text block and card
           id="humanizer": scroll target for the "See How It Works" button
       */}
-      <div
-        id="humanizer"
-        className="relative  z-10 w-full max-w-5xl mt-10"
+
+      <BlurFade
+        delay={0.55}
+        duration={0.6}
+        className="relative z-10 w-full max-w-5xl mt-10"
       >
-        <BlurFade delay={0.55} duration={0.6}>
-          <HumanizerCard />
-        </BlurFade>
-      </div>
+        <HumanizerCard />
+      </BlurFade>
     </section>
   );
 }

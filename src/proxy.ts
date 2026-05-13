@@ -22,6 +22,7 @@ const isPublicRoute = createRouteMatcher([
   "/admin/login(.*)",
   "/api/auth/admin-login(.*)",
   "/api/auth/admin-logout(.*)",
+  "/api/admin(.*)",
 ]);
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
@@ -29,6 +30,7 @@ const isAdminAuthRoute = createRouteMatcher([
   "/admin/login(.*)",
   "/api/auth/admin-login(.*)",
   "/api/auth/admin-logout(.*)",
+  "/api/admin(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {

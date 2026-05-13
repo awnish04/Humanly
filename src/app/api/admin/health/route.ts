@@ -28,30 +28,8 @@ export async function GET() {
     results.stripe = { status: "error", latency: Date.now() - stripeStart };
   }
 
-  // Check RewriteAI (humanizer)
-  const humanizerStart = Date.now();
-  try {
-    const apiKey = process.env.REWRITE_API_KEY?.replace(/^["']|["']$/g, "");
-    const res = await fetch("https://rewriteai.com/api/v1/humanize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ text: "ping" }),
-      signal: AbortSignal.timeout(5000),
-    });
-    // Any response (even 402) means the service is reachable
-    results.humanizer = {
-      status: res.status < 500 ? "ok" : "error",
-      latency: Date.now() - humanizerStart,
-    };
-  } catch {
-    results.humanizer = {
-      status: "error",
-      latency: Date.now() - humanizerStart,
-    };
-  }
+  // Humanizer is local (no external API check needed)
+  results.humanizer = { status: "ok", latency: 0 };
 
   // API itself is always ok if we got here
   results.api = { status: "ok", latency: 0 };

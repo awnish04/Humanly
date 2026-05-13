@@ -437,16 +437,32 @@ export function HumanizerCard() {
     setAiScores(null);
     setIsSample(false);
 
+    console.log(
+      "📄 File upload started:",
+      file.name,
+      `(${(file.size / 1024).toFixed(2)} KB)`,
+    );
+
     const ext = file.name.split(".").pop()?.toLowerCase();
 
     if (ext === "txt") {
+      console.log("📝 Reading .txt file...");
       const reader = new FileReader();
-      reader.onload = (ev) => setInputText((ev.target?.result as string) ?? "");
+      reader.onload = (ev) => {
+        const text = (ev.target?.result as string) ?? "";
+        console.log("✅ Text file loaded:", text.length, "characters");
+        setInputText(text);
+      };
+      reader.onerror = () => {
+        console.error("❌ Failed to read text file");
+        toast.error("Failed to read text file");
+      };
       reader.readAsText(file);
       return;
     }
 
     if (ext === "pdf") {
+      console.log("📕 Reading .pdf file...");
       try {
         const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
         GlobalWorkerOptions.workerSrc = new URL(
@@ -455,6 +471,7 @@ export function HumanizerCard() {
         ).toString();
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await getDocument({ data: arrayBuffer }).promise;
+        console.log("📄 PDF loaded:", pdf.numPages, "pages");
         let text = "";
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
@@ -462,25 +479,35 @@ export function HumanizerCard() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           text += content.items.map((item: any) => item.str).join(" ") + "\n";
         }
+        console.log("✅ PDF extracted:", text.length, "characters");
         setInputText(text.trim());
-      } catch {
+      } catch (error) {
+        console.error("❌ PDF read error:", error);
         toast.error("Failed to read PDF. Try copying the text manually.");
       }
       return;
     }
 
     if (ext === "docx" || ext === "doc") {
+      console.log("📘 Reading .docx file...");
       try {
         const mammoth = await import("mammoth");
         const arrayBuffer = await file.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
+        console.log(
+          "✅ Word document extracted:",
+          result.value.length,
+          "characters",
+        );
         setInputText(result.value.trim());
-      } catch {
+      } catch (error) {
+        console.error("❌ Word document read error:", error);
         toast.error("Failed to read Word document.");
       }
       return;
     }
 
+    console.error("❌ Unsupported file type:", ext);
     toast.error("Unsupported file type. Please upload .txt, .pdf, or .docx");
   };
 
@@ -567,7 +594,7 @@ export function HumanizerCard() {
         <div className="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-border">
           {/* LEFT: Input */}
           <div className="grid grid-rows-[1fr_52px]">
-            <div className="relative">
+            <div className="relative overflow-y-auto">
               <textarea
                 ref={inputRef}
                 value={inputText}
@@ -578,7 +605,7 @@ export function HumanizerCard() {
                 }}
                 placeholder="Paste your text here (at least 50 words)"
                 className={cn(
-                  "w-full min-h-[360px] sm:min-h-[440px] lg:min-h-[500px] resize-none bg-transparent p-5 text-sm text-foreground placeholder:text-muted-foreground outline-none",
+                  "w-full h-full min-h-[360px] sm:min-h-[440px] lg:min-h-[500px] resize-none bg-transparent p-6 text-sm text-foreground placeholder:text-muted-foreground outline-none",
                   isOverLimit && "text-destructive",
                 )}
               />
@@ -669,27 +696,9 @@ export function HumanizerCard() {
           </div>
 
           {/* RIGHT: Output */}
-          <div className="grid grid-rows-[1fr_52px] border-t md:border-t-0 border-border">
-            <div className="relative min-h-[360px] sm:min-h-[440px] lg:min-h-[500px] overflow-y-auto">
-              {results.length > 1 && (
-                <div className="flex items-center gap-1 px-5 pt-4">
-                  {results.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveOption(i)}
-                      className={cn(
-                        "px-2 py-0.5 rounded-md text-xs font-medium transition-colors",
-                        activeOption === i
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      Option {i + 1}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <div className="p-5">
+          <div className="grid grid-rows-[1fr_52px]">
+            <div className="relative overflow-y-auto">
+              <div className="p-6 h-full">
                 {outputText ? (
                   isSample && showTyping ? (
                     <TypingAnimation

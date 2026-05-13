@@ -35,8 +35,6 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -69,6 +67,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -82,6 +81,8 @@ interface User {
   requests: number;
   createdAt: string;
   lastSignIn: string | null;
+  isOnline: boolean;
+  lastSeenAt: string | null;
 }
 
 const PLAN_COLORS: Record<string, string> = {
@@ -130,7 +131,6 @@ function UserDrawer({ user }: { user: User }) {
         </DrawerHeader>
 
         <div className="flex flex-col gap-5 overflow-y-auto px-4 text-sm">
-          {/* Plan badge */}
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Plan</span>
             <Badge
@@ -142,7 +142,6 @@ function UserDrawer({ user }: { user: User }) {
             </Badge>
           </div>
 
-          {/* Usage */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Word Usage</span>
@@ -167,7 +166,6 @@ function UserDrawer({ user }: { user: User }) {
 
           <Separator />
 
-          {/* Stats */}
           <div className="grid grid-cols-2 gap-4">
             {[
               {
@@ -220,6 +218,7 @@ function UserDrawer({ user }: { user: User }) {
 export default function UsersPage() {
   const [users, setUsers] = React.useState<User[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [syncing, setSyncing] = React.useState(false);
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -229,21 +228,62 @@ export default function UsersPage() {
     React.useState<VisibilityState>({});
   const [planFilter, setPlanFilter] = React.useState<string>("all");
 
-  const fetchUsers = async () => {
-    setLoading(true);
+  const fetchUsers = async (isInitial = false) => {
+    if (isInitial) setLoading(true);
     try {
       const res = await fetch("/api/admin/users");
+
+      // If redirected or not JSON, don't touch existing data
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!res.ok || !contentType.includes("application/json")) {
+        console.warn("⚠️ fetchUsers: non-JSON response, skipping update");
+        return;
+      }
+
       const data = await res.json();
-      setUsers(data.users ?? []);
-    } catch {
-      setUsers([]);
+      if (data.users) setUsers(data.users);
+    } catch (err) {
+      console.error("fetchUsers error:", err);
+      // Never clear table on error
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
+    }
+  };
+
+  const syncUsers = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/admin/sync-all-users");
+
+      const contentType = res.headers.get("content-type") ?? "";
+      if (!contentType.includes("application/json")) {
+        toast.error("Sync failed — not authenticated");
+        return;
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Synced ${data.synced} users from Clerk!`);
+        await fetchUsers(false);
+      } else {
+        toast.error(data.error || "Sync failed");
+      }
+    } catch {
+      toast.error("Failed to sync users");
+    } finally {
+      setSyncing(false);
     }
   };
 
   React.useEffect(() => {
-    void fetchUsers();
+    void fetchUsers(true);
+
+    // Background refresh every 30 seconds — no spinner, never clears table
+    const interval = setInterval(() => {
+      void fetchUsers(false);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const filteredUsers = React.useMemo(() => {
@@ -285,6 +325,25 @@ export default function UsersPage() {
             <span className="ml-1 opacity-70">· {row.original.billing}</span>
           )}
         </Badge>
+      ),
+    },
+    {
+      accessorKey: "isOnline",
+      header: "Status",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <span
+            className={cn(
+              "size-2 rounded-full",
+              row.original.isOnline
+                ? "bg-green-500 animate-pulse"
+                : "bg-gray-400",
+            )}
+          />
+          <span className="text-xs text-muted-foreground">
+            {row.original.isOnline ? "Online" : "Offline"}
+          </span>
+        </div>
       ),
     },
     {
@@ -470,12 +529,12 @@ export default function UsersPage() {
         </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
           <button
-            onClick={fetchUsers}
-            disabled={loading}
-            className="flex items-center gap-1.5 text-xs font-medium border border-border rounded-lg px-3 py-1.5 hover:bg-muted transition-colors"
+            onClick={syncUsers}
+            disabled={syncing || loading}
+            className="flex items-center gap-1.5 text-xs font-medium border border-primary bg-primary text-primary-foreground rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={cn("size-3.5", loading && "animate-spin")} />
-            Refresh
+            <RefreshCw className={cn("size-3.5", syncing && "animate-spin")} />
+            {syncing ? "Syncing..." : "Sync from Clerk"}
           </button>
         </div>
       </header>

@@ -12,6 +12,7 @@ import { AuthToast } from "@/components/shared/auth-toast";
 import { GoToTopButton } from "@/components/shared/go-to-top-button";
 import { DiscountPopup } from "@/components/shared/discount-popup";
 import { VisitorTracker } from "@/components/admin/visitor-tracker";
+import { OnlineStatusTracker } from "@/components/shared/online-status-tracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -65,6 +66,7 @@ export default function RootLayout({
             <GoToTopButton />
             <DiscountPopup />
             <VisitorTracker />
+            <OnlineStatusTracker />
           </ThemeProvider>
         </ClerkProvider>
       </body>

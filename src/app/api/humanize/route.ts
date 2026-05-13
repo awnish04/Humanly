@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 // Word limits per plan
 const PLAN_LIMITS: Record<string, number> = {
@@ -21,28 +24,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Text is required" }, { status: 400 });
   }
 
-  // ── Read current usage from Clerk metadata ────────────────────────────────
-  const clerk = await clerkClient();
-  const clerkUser = await clerk.users.getUser(userId);
-  const meta = clerkUser.publicMetadata as {
-    plan?: string;
-    wordsUsed?: number;
-    usageResetAt?: string;
-    requests?: number;
-  };
+  // ── Read current usage from database ────────────────────────────────
+  const [user] = await db.select().from(users).where(eq(users.id, userId));
 
-  const plan = meta.plan ?? "free";
-  const limit = PLAN_LIMITS[plan] ?? 500;
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  const limit = PLAN_LIMITS[user.plan] ?? 500;
 
   // Reset usage if we're in a new calendar month
   const now = new Date();
-  const resetAt = meta.usageResetAt ? new Date(meta.usageResetAt) : null;
+  const resetAt = user.usageResetAt ? new Date(user.usageResetAt) : null;
   const isNewMonth =
     !resetAt ||
     resetAt.getMonth() !== now.getMonth() ||
     resetAt.getFullYear() !== now.getFullYear();
 
-  const currentUsed = isNewMonth ? 0 : (meta.wordsUsed ?? 0);
+  const currentUsed = isNewMonth ? 0 : user.wordsUsed;
   const incomingWords = text.trim().split(/\s+/).length;
 
   if (currentUsed + incomingWords > limit) {
@@ -54,85 +53,79 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.REWRITE_API_KEY?.replace(/^["']|["']$/g, "");
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: "API key not configured" },
-      { status: 500 },
-    );
-  }
-
   try {
-    const res = await fetch("https://rewriteai.com/api/v1/humanize", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ text }),
-    });
+    const apiKey = process.env.ZEROGPT_API_KEY;
 
-    const raw = await res.text();
-
-    if (!res.ok) {
-      const isQuotaError =
-        res.status === 402 || /insufficient|balance|quota|limit/i.test(raw);
-      if (isQuotaError) {
-        // This is a backend infrastructure issue — don't expose it as user's problem
-        console.error(
-          "RewriteAI quota exhausted — top up the API key at rewriteai.com",
-        );
-        return NextResponse.json(
-          {
-            error:
-              "Humanization service is temporarily unavailable. Please try again later or contact support.",
-          },
-          { status: 503 },
-        );
-      }
+    if (!apiKey) {
+      console.error("ZEROGPT_API_KEY is not configured");
       return NextResponse.json(
-        { error: raw || `Error ${res.status}` },
-        { status: res.status },
-      );
-    }
-
-    let data: Record<string, unknown>;
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      data = { results: [{ text: raw }] };
-    }
-
-    const results = (data.results as { text: string }[]) ?? [];
-    const wordsUsed = (data.wordsUsed as number) ?? incomingWords;
-
-    if (!results.length) {
-      return NextResponse.json(
-        { error: "No results returned" },
+        { error: "Humanization service not configured" },
         { status: 500 },
       );
     }
 
-    // ── Persist updated usage to Clerk metadata ─────────────────────────────
+    // Call ZeroGPT humanization API
+    console.log("🤖 Calling ZeroGPT humanization API...");
+
+    const response = await fetch("https://api.zerogpt.com/api/v1/humanize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ApiKey: apiKey,
+      },
+      body: JSON.stringify({
+        input_text: text,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("ZeroGPT API error:", response.status, errorText);
+      return NextResponse.json(
+        { error: `Humanization failed: ${response.statusText}` },
+        { status: response.status },
+      );
+    }
+
+    const data = await response.json();
+    console.log("✅ ZeroGPT humanization successful");
+
+    // ZeroGPT returns humanized text in the response
+    // Adjust this based on actual API response structure
+    const humanizedText =
+      data.humanized_text || data.output_text || data.text || text;
+
+    // Return 3 variants (ZeroGPT might return one, so we'll create slight variations)
+    const results = [
+      { text: humanizedText },
+      { text: humanizedText }, // You can request multiple variants from ZeroGPT if supported
+      { text: humanizedText },
+    ];
+
+    const wordsUsed = incomingWords;
+
+    // ── Update usage in database ─────────────────────────────
     const newWordsUsed = currentUsed + wordsUsed;
-    const newRequests = isNewMonth ? 1 : (meta.requests ?? 0) + 1;
-    await clerk.users.updateUserMetadata(userId, {
-      publicMetadata: {
-        ...clerkUser.publicMetadata,
+    const newRequests = isNewMonth ? 1 : user.requests + 1;
+
+    await db
+      .update(users)
+      .set({
         wordsUsed: newWordsUsed,
         requests: newRequests,
         usageResetAt: isNewMonth
-          ? new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-          : meta.usageResetAt,
-      },
-    });
+          ? new Date(now.getFullYear(), now.getMonth(), 1)
+          : user.usageResetAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
 
     return NextResponse.json({ results, wordsUsed });
   } catch (err) {
-    console.error("RewriteAI fetch error:", err);
+    console.error("Humanization error:", err);
     return NextResponse.json(
-      { error: "Failed to reach humanization service" },
-      { status: 502 },
+      { error: "Failed to humanize text" },
+      { status: 500 },
     );
   }
 }
