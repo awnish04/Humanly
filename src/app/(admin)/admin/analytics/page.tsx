@@ -19,7 +19,7 @@ import {
   Smartphone,
   Tablet,
 } from "lucide-react";
-import type { VisitorStats } from "@/lib/visitor-tracking";
+import type { VisitorStats } from "@/lib/visitor-tracking-db";
 import { cn } from "@/lib/utils";
 import { getCountryFlag } from "@/lib/country-flags";
 import { VisitorTrafficArea } from "@/components/admin/charts/analytics/visitor-traffic-area";

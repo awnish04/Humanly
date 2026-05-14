@@ -23,6 +23,14 @@ export async function GET() {
         user.lastSeenAt !== null &&
         user.lastSeenAt > twoMinutesAgo;
 
+      console.log(`👤 User ${user.email}:`);
+      console.log(`   DB isOnline: ${user.isOnline}`);
+      console.log(`   DB lastSeenAt: ${user.lastSeenAt?.toISOString()}`);
+      console.log(`   Calculated isReallyOnline: ${isReallyOnline}`);
+      console.log(
+        `   Time check: lastSeen > twoMinutesAgo? ${user.lastSeenAt ? user.lastSeenAt > twoMinutesAgo : "N/A"}`,
+      );
+
       return {
         id: user.id,
         name: user.name ?? "Unknown",

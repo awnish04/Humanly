@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getClickStats } from "@/lib/visitor-tracking";
+import { getClickStats } from "@/lib/visitor-tracking-db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

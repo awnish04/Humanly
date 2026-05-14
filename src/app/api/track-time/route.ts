@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { updateTimeSpent } from "@/lib/visitor-tracking";
+import { updateTimeSpent } from "@/lib/visitor-tracking-db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

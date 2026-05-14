@@ -10,9 +10,9 @@ import {
   getGeoLocation,
   parseUserAgent,
   trackVisitor,
-} from "@/lib/visitor-tracking";
+} from "@/lib/visitor-tracking-db";
 
-// Force dynamic rendering and Node.js runtime for filesystem access
+// Force dynamic rendering
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
