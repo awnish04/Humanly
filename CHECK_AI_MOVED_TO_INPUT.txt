@@ -1,0 +1,54 @@
+✅ "CHECK FOR AI" BUTTON MOVED TO INPUT SIDE
+
+## CHANGES MADE:
+
+### 1. Button Location
+✅ Moved "Check for AI" button from OUTPUT side (right) to INPUT side (left)
+✅ Now appears next to "Humanize AI" button on the input panel
+
+### 2. Detection Logic
+✅ Now ALWAYS checks the INPUT text (before humanization)
+✅ No longer checks the output text
+✅ Shows AI percentage of the original text you paste/upload
+
+### 3. UI Layout
+
+**INPUT SIDE (Left Panel):**
+- Word count
+- Clear button
+- **Check for AI button** ← NEW LOCATION
+- Humanize AI button
+
+**OUTPUT SIDE (Right Panel):**
+- Word count
+- Copy button (only)
+- ❌ Removed "Check for AI" button
+
+## HOW IT WORKS NOW:
+
+1. **Paste or upload your text** in the input panel
+2. **Click "Check for AI"** to see if it's AI-generated
+3. AI detection panel shows:
+   - AI percentage (0-100%)
+   - Cross-check with 8 detectors
+   - Full report with breakdown
+4. **Click "Humanize AI"** to rewrite the text
+5. **Copy the humanized output** from the right panel
+
+## BENEFITS:
+
+✅ Check AI BEFORE humanizing (makes more sense)
+✅ See if your input needs humanization
+✅ Cleaner output panel (just copy button)
+✅ Better workflow: Check → Humanize → Copy
+
+## TESTING:
+
+1. Go to homepage
+2. Paste AI-generated text in the INPUT panel
+3. Click "Check for AI" button (left side, next to Humanize AI)
+4. See AI detection results
+5. Click "Humanize AI" to rewrite
+6. Copy the output from right panel
+
+**Now you check the AI percentage of your INPUT text, not the output!**

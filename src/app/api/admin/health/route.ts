@@ -28,8 +28,52 @@ export async function GET() {
     results.stripe = { status: "error", latency: Date.now() - stripeStart };
   }
 
-  // Humanizer is local (no external API check needed)
-  results.humanizer = { status: "ok", latency: 0 };
+  // Check ZeroGPT API (Humanizer)
+  const zerogptStart = Date.now();
+  try {
+    const apiKey = process.env.ZEROGPT_API_KEY;
+    if (!apiKey) {
+      results.zerogpt = { status: "error", latency: 0 };
+    } else {
+      // Test with a small text to check if API is responsive
+      const response = await fetch(
+        "https://api.zerogpt.com/api/detect/detectText",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ApiKey: apiKey,
+          },
+          body: JSON.stringify({
+            input_text: "This is a test.",
+          }),
+        },
+      );
+
+      if (response.ok) {
+        results.zerogpt = { status: "ok", latency: Date.now() - zerogptStart };
+      } else {
+        results.zerogpt = {
+          status: "error",
+          latency: Date.now() - zerogptStart,
+        };
+      }
+    }
+  } catch {
+    results.zerogpt = { status: "error", latency: Date.now() - zerogptStart };
+  }
+
+  // Database check (Neon PostgreSQL)
+  const dbStart = Date.now();
+  try {
+    // Simple query to check database connectivity
+    const { db } = await import("@/lib/db");
+    const { users } = await import("@/lib/db/schema");
+    await db.select().from(users).limit(1);
+    results.database = { status: "ok", latency: Date.now() - dbStart };
+  } catch {
+    results.database = { status: "error", latency: Date.now() - dbStart };
+  }
 
   // API itself is always ok if we got here
   results.api = { status: "ok", latency: 0 };

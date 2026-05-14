@@ -54,6 +54,9 @@ export default function AdminDashboardPage() {
       const statsData = await statsRes.json();
       const analyticsData = await analyticsRes.json();
       const healthData = await healthRes.json();
+
+      console.log("🏥 Health Data Fetched:", healthData);
+
       setStats({
         ...statsData,
         signupsByDay: analyticsData.signupsByDay,
@@ -62,7 +65,8 @@ export default function AdminDashboardPage() {
         wordsByPlan: analyticsData.wordsByPlan,
       });
       setHealth(healthData);
-    } catch {
+    } catch (error) {
+      console.error("❌ Error fetching dashboard data:", error);
       setStats({
         totalUsers: 0,
         paidUsers: 0,
@@ -248,7 +252,8 @@ export default function AdminDashboardPage() {
                 health?.services ?? {
                   api: { status: "ok", latency: 0 },
                   stripe: { status: "ok", latency: 0 },
-                  humanizer: { status: "ok", latency: 0 },
+                  zerogpt: { status: "ok", latency: 0 },
+                  database: { status: "ok", latency: 0 },
                   clerk: { status: "ok", latency: 0 },
                 }
               }

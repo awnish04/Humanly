@@ -522,9 +522,9 @@ export function HumanizerCard() {
   };
 
   const handleDetect = async () => {
-    const textToCheck = outputText || inputText;
-    if (!textToCheck.trim()) {
-      toast.error("Enter or humanize text first");
+    // Always check INPUT text (not output)
+    if (!inputText.trim()) {
+      toast.error("Enter some text first");
       return;
     }
     setDetecting(true);
@@ -533,7 +533,7 @@ export function HumanizerCard() {
       const res = await fetch("/api/detect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: textToCheck }),
+        body: JSON.stringify({ text: inputText }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -543,7 +543,7 @@ export function HumanizerCard() {
       setAiScores(data as { ai: number; assisted: number; human: number });
     } catch {
       // Fallback to local heuristic if API is unreachable
-      setAiScores(estimateAiScoreLocal(textToCheck));
+      setAiScores(estimateAiScoreLocal(inputText));
     } finally {
       setDetecting(false);
     }
@@ -674,6 +674,23 @@ export function HumanizerCard() {
                   </button>
                 )}
                 <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDetect}
+                  disabled={detecting || !inputText.trim()}
+                  className="gap-1.5 h-8 px-3 text-xs"
+                >
+                  {detecting ? (
+                    <span className="relative flex size-3.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                      <ScanSearch className="relative size-3.5" />
+                    </span>
+                  ) : (
+                    <ScanSearch className="size-3.5" />
+                  )}
+                  Check for AI
+                </Button>
+                <Button
                   size="sm"
                   onClick={handleHumanize}
                   disabled={isOverLimit || loading || !inputText.trim()}
@@ -729,28 +746,12 @@ export function HumanizerCard() {
                 {outputText && (
                   <button
                     onClick={handleCopyOutput}
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors px-3 py-1.5 rounded-md"
                   >
                     <Copy className="size-3.5" />
+                    Copy
                   </button>
                 )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDetect}
-                  disabled={detecting || (!inputText.trim() && !outputText)}
-                  className="gap-1.5 h-8 px-3 text-xs"
-                >
-                  {detecting ? (
-                    <span className="relative flex size-3.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                      <ScanSearch className="relative size-3.5" />
-                    </span>
-                  ) : (
-                    <ScanSearch className="size-3.5" />
-                  )}
-                  Check for AI
-                </Button>
               </div>
             </div>
           </div>

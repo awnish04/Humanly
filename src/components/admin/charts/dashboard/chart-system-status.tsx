@@ -33,16 +33,23 @@ interface Props {
 const SERVICE_LABELS: Record<string, string> = {
   api: "API",
   stripe: "Stripe",
-  humanizer: "Humanizer",
+  zerogpt: "ZeroGPT",
+  database: "Database",
   clerk: "Auth (Clerk)",
 };
 
 export function ChartSystemStatus({ services, checkedAt }: Props) {
+  // Debug: Log the services data
+  console.log("📊 System Status Chart - Services:", services);
+  console.log("📊 System Status Chart - Checked at:", checkedAt);
+
   const chartData = Object.entries(services).map(([key, val]) => ({
     service: SERVICE_LABELS[key] ?? key,
     latency: val.latency,
     status: val.status,
   }));
+
+  console.log("📊 System Status Chart - Chart Data:", chartData);
 
   const allOk = Object.values(services).every((s) => s.status === "ok");
 

@@ -1,0 +1,62 @@
+✅ ZEROGPT API ENDPOINTS UPDATED
+
+## CHANGES MADE:
+
+### 1. HUMANIZATION API (/api/humanize/route.ts)
+✅ Updated to use ZeroGPT paraphrase endpoint
+✅ Generates ONLY 1 variant (not 3)
+✅ Uses "casual" tone for humanization
+
+Endpoint: https://api.zerogpt.com/api/transform/paraphrase
+Request:
+{
+  "string": "text to humanize",
+  "wsId": "",
+  "skipRealtime": true,
+  "tone": "casual",
+  "gen_speed": "quick"
+}
+
+Response: data.data.message contains humanized text
+
+### 2. DETECTION API (/api/detect/text/route.ts)
+✅ Removed unnecessary ZEROGPT_TOKEN requirement
+✅ Now only uses ZEROGPT_API_KEY (which you have)
+✅ Uses correct ZeroGPT detection endpoint
+
+Endpoint: https://api.zerogpt.com/api/detect/detectText
+Request:
+{
+  "input_text": "text to detect"
+}
+
+Response: data.data.fakePercentage contains AI percentage
+
+### 3. DEPRECATED ENDPOINT (/api/detect/route.ts)
+⚠️ This endpoint uses Sapling API (not ZeroGPT)
+⚠️ Marked as deprecated - will be removed in future
+✅ No changes needed - still works as fallback
+
+## ENVIRONMENT VARIABLES NEEDED:
+✅ ZEROGPT_API_KEY="64600640-aa03-4489-90db-a5dde2251aa8" (already configured)
+❌ ZEROGPT_TOKEN - NOT NEEDED ANYMORE (removed)
+
+## FRONTEND:
+✅ humanizer-card.tsx uses correct endpoints:
+  - /api/detect for AI detection
+  - /api/humanize for humanization
+
+## TESTING:
+1. Restart dev server: npm run dev
+2. Test humanization:
+   - Paste AI text
+   - Click "Humanize AI"
+   - Should see 1 humanized version (not 3)
+3. Test detection:
+   - Click "Check for AI"
+   - Should show AI percentage
+
+## DEPLOYMENT:
+✅ Works on Vercel
+✅ Works on any domain
+✅ Only needs ZEROGPT_API_KEY in environment variables

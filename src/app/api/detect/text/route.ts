@@ -149,9 +149,8 @@ async function zerogptDetection(
   text: string,
 ): Promise<{ ai: number; assisted: number; human: number } | null> {
   const apiKey = process.env.ZEROGPT_API_KEY;
-  const token = process.env.ZEROGPT_TOKEN;
 
-  if (!apiKey || !token) return null;
+  if (!apiKey) return null;
 
   try {
     const res = await fetch("https://api.zerogpt.com/api/detect/detectText", {
@@ -159,7 +158,6 @@ async function zerogptDetection(
       headers: {
         "Content-Type": "application/json",
         ApiKey: apiKey,
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ input_text: text }),
     });
